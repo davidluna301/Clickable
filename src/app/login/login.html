@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="Clickable - Plataforma educativa de seguridad digital"
+    >
+
+    <title>Clickable | Plataforma</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+</head>
+
+
+<body>
+
+<nav class="site-nav" aria-label="Navegación principal">
+
+    <a href="#login" class="site-brand">
+        <span class="logo-icon">C</span>
+        <span>Clickable<span class="green">.</span></span>
+    </a>
+
+    <div class="site-links">
+        <a href="#login">Iniciar sesión</a>
+        <a href="#register">Crear cuenta</a>
+        <a routerLink="/profile">Mi progreso</a>
+    </div>
+
+    <a href="#register" class="site-cta">Empezar ahora <span>→</span></a>
+
+</nav>
+
+
+<!-- ==================================================
+     LOGIN
+================================================== -->
+
+<section
+    class="screen auth-screen"
+    id="login"
+>
+
+    <div class="auth-layout">
+
+
+        <!-- LEFT -->
+        <div class="auth-brand">
+
+            <div class="brand-container">
+
+                <a
+                    href="#login"
+                    class="logo"
+                >
+
+                    <span class="logo-icon">
+                        C
+                    </span>
+
+                    <span>
+                        Clickable<span class="green">.</span>
+                    </span>
+
+                </a>
+
+
+                <div class="brand-message">
+
+                    <span class="mini-label">
+                        SEGURIDAD DIGITAL
+                    </span>
+
+
+                    <h1>
+
+                        No debes darle
+
+                        <span>click</span>
+
+                        a todo.
+
+                    </h1>
+
+
+                    <p>
+
+                        Aprende a identificar amenazas digitales,
+                        mejora tus habilidades y conviértete en
+                        alguien más difícil de engañar.
+
+                    </p>
+
+
+                    <div class="security-points">
+
+                        <div>
+
+                            <span class="point-icon">
+                                ✓
+                            </span>
+
+                            Aprende jugando
+
+                        </div>
+
+
+                        <div>
+
+                            <span class="point-icon">
+                                ✓
+                            </span>
+
+                            Detecta amenazas
+
+                        </div>
+
+
+                        <div>
+
+                            <span class="point-icon">
+                                ✓
+                            </span>
+
+                            Protege tus datos
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="brand-footer">
+
+                    <span>
+                        Clickable
+                    </span>
+
+                    <span>
+                        Educación digital
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- RIGHT -->
+        <div class="auth-panel">
+
+            <div class="auth-card">
+
+                <div class="mobile-logo">
+
+                    <span class="logo-icon">
+                        C
+                    </span>
+
+                    Clickable<span class="green">.</span>
+
+                </div>
+
+
+                <div class="auth-heading">
+
+                    <span class="mini-label">
+                        BIENVENIDO DE NUEVO
+                    </span>
+
+                    <h2>
+                        Inicia sesión
+                    </h2>
+
+                    <p>
+                        Continúa aprendiendo sobre seguridad digital.
+                    </p>
+
+                </div>
+
+
+                <form>
+
+                    <div class="input-group">
+
+                        <label for="email">
+                            Correo electrónico
+                        </label>
+
+                        <div class="input-wrapper">
+
+                            <span>
+                                @
+                            </span>
+
+                            <input
+                                type="email"
+                                id="email"
+                                placeholder="tu@email.com"
+                            >
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="input-group">
+
+                        <div class="label-row">
+
+                            <label for="password">
+                                Contraseña
+                            </label>
+
+                            <a href="#">
+                                ¿Olvidaste tu contraseña?
+                            </a>
+
+                        </div>
+
+
+                        <div class="input-wrapper">
+
+                            <span>
+                                •••
+                            </span>
+
+                            <input
+                                type="password"
+                                id="password"
+                                placeholder="Tu contraseña"
+                            >
+
+                        </div>
+
+                    </div>
+
+
+
+                    <label class="remember">
+
+                        <input
+                            type="checkbox"
+                        >
+
+                        <span>
+                            Mantener sesión iniciada
+                        </span>
+
+                    </label>
+
+
+
+                    <button
+                        type="submit"
+                        class="main-button"
+                    >
+
+                        Iniciar sesión
+
+                        <span>
+                            →
+                        </span>
+
+                    </button>
+
+                </form>
+
+
+
+                <div class="divider">
+
+                    <span></span>
+
+                    <small>
+                        O continúa con
+                    </small>
+
+                    <span></span>
+
+                </div>
+
+
+
+                <button
+                    class="social-button"
+                    type="button"
+                >
+
+                    <strong>
+                        G
+                    </strong>
+
+                    Continuar con Google
+
+                </button>
+
+
+
+                <p class="auth-switch">
+
+                    ¿No tienes una cuenta?
+
+                    <a href="#register">
+                        Crear cuenta
+                    </a>
+
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- ==================================================
+     REGISTER
+================================================== -->
+
+<section
+    class="screen auth-screen register-screen"
+    id="register"
+>
+
+    <div class="auth-layout">
+
+
+        <!-- LEFT -->
+        <div class="auth-brand register-brand">
+
+            <div class="brand-container">
+
+                <a
+                    href="#login"
+                    class="logo"
+                >
+
+                    <span class="logo-icon">
+                        C
+                    </span>
+
+                    <span>
+                        Clickable<span class="green">.</span>
+                    </span>
+
+                </a>
+
+
+                <div class="brand-message">
+
+                    <span class="mini-label">
+                        CREA TU PERFIL
+                    </span>
+
+
+                    <h1>
+
+                        Aprende a
+
+                        <span>detectar</span>
+
+                        antes de hacer clic.
+
+                    </h1>
+
+
+                    <p>
+
+                        Tu progreso, desafíos y conocimientos
+                        estarán guardados en un solo lugar.
+
+                    </p>
+
+
+                    <div class="level-preview">
+
+                        <div class="level-header">
+
+                            <span>
+                                TU PROGRESO
+                            </span>
+
+                            <strong>
+                                0%
+                            </strong>
+
+                        </div>
+
+
+                        <div class="progress-bar">
+
+                            <span></span>
+
+                        </div>
+
+
+                        <div class="level-footer">
+
+                            <span>
+                                Nivel 01
+                            </span>
+
+                            <span>
+                                Principiante
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="brand-footer">
+
+                    <span>
+                        Clickable
+                    </span>
+
+                    <span>
+                        Aprende · Practica · Protege
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- RIGHT -->
+        <div class="auth-panel">
+
+            <div class="auth-card register-card">
+
+                <div class="mobile-logo">
+
+                    <span class="logo-icon">
+                        C
+                    </span>
+
+                    Clickable<span class="green">.</span>
+
+                </div>
+
+
+                <div class="auth-heading">
+
+                    <span class="mini-label">
+                        EMPIEZA AHORA
+                    </span>
+
+                    <h2>
+                        Crea tu cuenta
+                    </h2>
+
+                    <p>
+                        Solo necesitas unos datos para comenzar.
+                    </p>
+
+                </div>
+
+
+                <form>
+
+
+                    <div class="two-inputs">
+
+                        <div class="input-group">
+
+                            <label>
+                                Nombre
+                            </label>
+
+                            <div class="input-wrapper">
+
+                                <input
+                                    type="text"
+                                    placeholder="Tu nombre"
+                                >
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="input-group">
+
+                            <label>
+                                Apellido
+                            </label>
+
+                            <div class="input-wrapper">
+
+                                <input
+                                    type="text"
+                                    placeholder="Tu apellido"
+                                >
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="input-group">
+
+                        <label>
+                            Correo electrónico
+                        </label>
+
+                        <div class="input-wrapper">
+
+                            <span>
+                                @
+                            </span>
+
+                            <input
+                                type="email"
+                                placeholder="tu@email.com"
+                            >
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="input-group">
+
+                        <label>
+                            Contraseña
+                        </label>
+
+                        <div class="input-wrapper">
+
+                            <span>
+                                •••
+                            </span>
+
+                            <input
+                                type="password"
+                                placeholder="Mínimo 8 caracteres"
+                            >
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="password-strength">
+
+                        <div class="strength-bars">
+
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                            <span></span>
+
+                        </div>
+
+                        <small>
+                            Seguridad de la contraseña
+                        </small>
+
+                    </div>
+
+
+
+                    <label class="terms">
+
+                        <input
+                            type="checkbox"
+                        >
+
+                        <span>
+
+                            Acepto los
+                            <a href="#">
+                                términos y condiciones
+                            </a>
+                            y la política de privacidad.
+
+                        </span>
+
+                    </label>
+
+
+
+                    <button
+                        type="submit"
+                        class="main-button"
+                    >
+
+                        Crear mi cuenta
+
+                        <span>
+                            →
+                        </span>
+
+                    </button>
+
+                </form>
+
+
+                <p class="auth-switch">
+
+                    ¿Ya tienes una cuenta?
+
+                    <a href="#login">
+                        Iniciar sesión
+                    </a>
+
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+</body>
+
+</html>
