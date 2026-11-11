@@ -1,0 +1,400 @@
+<div class="game-board-container">
+  <!-- TOP HUD BAR -->
+  <header class="bar">
+    <div class="bar-left">
+      <a routerLink="/profile" class="exit-btn">← Perfil</a>
+      <div class="title-stack">
+        <h2>{{ module().icon }} {{ module().title }}</h2>
+        <small>Escenario {{ index() + 1 }} de {{ module().scenarios.length }}</small>
+      </div>
+    </div>
+
+    <div class="bar-right">
+      <button type="button" class="help-btn" (click)="openHelp()">
+        <span>📚</span>
+        Ayuda y Glosario
+      </button>
+
+      <div class="stats">
+        <span class="hearts" title="Vidas restantes">
+          @for (h of hearts(); track $index) {
+            <span>{{ h ? '❤️' : '🤍' }}</span>
+          }
+        </span>
+        <span class="xp">⚡ {{ xp() }} XP</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="progress" title="Progreso del módulo">
+    <div [style.width.%]="progress()"></div>
+  </div>
+
+  @if (status() === 'playing') {
+    <!-- DESKTOP MODE BAR -->
+    <div class="workspace-toolbar">
+      <div class="hint-banner">
+        <span class="hint-icon">🔍</span>
+        <span>
+          <strong>Tu misión:</strong> Toca únicamente los elementos que contengan una señal sospechosa.
+          @if (totalThreatsInScenario() > 0 && missing().length === 0) {
+            <span class="all-found-chip">✓ ¡Ya encontraste todas las amenazas! Confirma abajo.</span>
+          }
+        </span>
+      </div>
+
+      <div class="view-switcher" role="group" aria-label="Cambiar vista del escenario">
+        <button
+          type="button"
+          [class.active]="desktopViewMode() === 'cards'"
+          (click)="desktopViewMode.set('cards')"
+        >
+          🖥️ Tarjetas
+        </button>
+        <button
+          type="button"
+          [class.active]="desktopViewMode() === 'simulator'"
+          (click)="desktopViewMode.set('simulator')"
+        >
+          📱 Simulador
+        </button>
+      </div>
+    </div>
+
+    <div class="mixed-layout" [class.simulator-forced]="desktopViewMode() === 'simulator'">
+      <!-- =====================================================
+           DESKTOP INTERACTIVE CARDS VIEW
+      ====================================================== -->
+      <div class="desktop-cards-panel">
+        <section [class]="'frame desktop-frame ' + scenario().frame">
+          <div class="window-chrome">
+            <div class="chrome-dots">
+              <span></span><span></span><span></span>
+            </div>
+            <div class="chrome-context">
+              <strong>{{ scenario().appHeader || scenario().title }}</strong>
+              @if (scenario().addressBar) {
+                <span class="chrome-address">{{ scenario().addressBar }}</span>
+              }
+            </div>
+            <span class="chrome-tag">{{ scenario().contextLabel || scenario().title }}</span>
+          </div>
+
+          <div class="cards-stack">
+            @for (p of scenario().parts; track p.id) {
+              <button
+                type="button"
+                [class]="'inspect-card ' + p.kind + ' ' + state(p)"
+                (click)="pick(p)"
+              >
+                <div class="card-meta">
+                  <span class="kind-badge">{{ kindLabel(p.kind) }}</span>
+                  @if (state(p) === 'found') {
+                    <span class="state-chip found">✓ Amenaza detectada (+10 XP)</span>
+                  } @else if (state(p) === 'wrong') {
+                    <span class="state-chip wrong">✗ Elemento seguro (-1 vida)</span>
+                  } @else if (state(p) === 'missed') {
+                    <span class="state-chip missed">⚠️ Amenaza no detectada</span>
+                  } @else {
+                    <span class="state-chip idle">Analizar elemento →</span>
+                  }
+                </div>
+                <div class="card-content">{{ p.text }}</div>
+              </button>
+            }
+          </div>
+        </section>
+
+        <!-- Desktop side summary -->
+        <aside class="desktop-mission-aside">
+          <div class="aside-card">
+            <span class="aside-kicker">PROGRESO DEL ESCENARIO</span>
+            <h3>{{ scenario().title }}</h3>
+            <div class="aside-metrics">
+              <div>
+                <strong>{{ evaluatedCount() }} / {{ scenario().parts.length }}</strong>
+                <small>Elementos revisados</small>
+              </div>
+              <div>
+                <strong>{{ found().length }}</strong>
+                <small>Señales detectadas</small>
+              </div>
+            </div>
+
+            <div class="aside-tips">
+              <strong>💡 Recuerda:</strong>
+              <ul>
+                @for (t of module().tips; track t) {
+                  <li>{{ t }}</li>
+                }
+              </ul>
+            </div>
+
+            <div class="aside-actions">
+              @if (!closed()) {
+                <button type="button" class="primary full-width" (click)="check()">
+                  Confirmar mi análisis <span>✓</span>
+                </button>
+              } @else {
+                <button type="button" class="primary full-width" (click)="next()">
+                  Siguiente escenario <span>→</span>
+                </button>
+              }
+
+              <button type="button" class="secondary-help-btn" (click)="openHelp()">
+                📚 ¿Dudas? Abrir Glosario
+              </button>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      <!-- =====================================================
+           MOBILE PHONE SIMULATOR VIEW (Auto on mobile, toggleable on desktop)
+      ====================================================== -->
+      <div class="phone-simulator-panel">
+        <div class="phone-bezel">
+          <div class="phone-status-bar">
+            <span>9:41</span>
+            <div class="phone-island"></div>
+            <span class="phone-icons">5G · 🔋</span>
+          </div>
+
+          <div class="phone-instruction">
+            👆 Toca lo que te parezca <strong>SOSPECHOSO</strong>
+          </div>
+
+          <div [class]="'phone-app-screen ' + scenario().frame">
+            <div class="phone-app-bar">
+              <strong>{{ scenario().appHeader || scenario().title }}</strong>
+              @if (scenario().addressBar) {
+                <div class="phone-address">{{ scenario().addressBar }}</div>
+              }
+            </div>
+
+            <div class="phone-elements">
+              @for (p of scenario().parts; track p.id) {
+                <button
+                  type="button"
+                  [class]="'phone-part ' + p.kind + ' ' + state(p)"
+                  (click)="pick(p)"
+                >
+                  <span class="phone-part-label">{{ kindLabel(p.kind) }}</span>
+                  <span class="phone-part-text">{{ p.text }}</span>
+                  @if (state(p) === 'found') {
+                    <span class="phone-badge ok">✓ Peligroso (+10 XP)</span>
+                  } @else if (state(p) === 'wrong') {
+                    <span class="phone-badge bad">✗ Seguro (-1 vida)</span>
+                  } @else if (state(p) === 'missed') {
+                    <span class="phone-badge missed">⚠️ Se escapó</span>
+                  }
+                </button>
+              }
+            </div>
+          </div>
+
+          <div class="phone-bottom-bar">
+            @if (!closed()) {
+              <button type="button" class="primary full-width" (click)="check()">
+                Confirmar análisis <span>✓</span>
+              </button>
+            } @else {
+              <button type="button" class="primary full-width" (click)="next()">
+                Siguiente escenario <span>→</span>
+              </button>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- =====================================================
+       FULL-SCREEN MOCKUP-STYLE FEEDBACK OVERLAY
+  ====================================================== -->
+  @if (overlay(); as ov) {
+    <div
+      class="feedback-overlay"
+      [class.is-positive]="ov.isPositive"
+      [class.is-negative]="!ov.isPositive"
+      role="dialog"
+      aria-modal="true"
+    >
+      <div class="feedback-sheet">
+        <div class="feedback-hero-icon" [class.ok]="ov.isPositive" [class.bad]="!ov.isPositive">
+          <span>{{ ov.isPositive ? '✓' : '✕' }}</span>
+        </div>
+
+        <h1 class="feedback-title">{{ ov.title }}</h1>
+        <p class="feedback-subtitle">{{ ov.subtitle }}</p>
+
+        @if (ov.category) {
+          <span class="feedback-category-pill" [class.ok]="ov.isPositive" [class.bad]="!ov.isPositive">
+            {{ ov.category }}
+          </span>
+        }
+
+        @if (ov.tappedText) {
+          <div class="feedback-card tapped-card">
+            <span class="card-kicker">ELEMENTO QUE TOCASTE</span>
+            <p class="tapped-quote">"{{ ov.tappedText }}"</p>
+          </div>
+        }
+
+        <div class="feedback-card why-card">
+          <div class="why-header">
+            <span>💡</span>
+            <strong>{{ ov.isPositive ? '¿Por qué es importante?' : '¿Por qué te equivocaste?' }}</strong>
+          </div>
+          <p>{{ ov.why }}</p>
+
+          @if (ov.whatItMeans) {
+            <div class="meaning-box">
+              <strong>📘 ¿Qué significa?</strong>
+              <p>{{ ov.whatItMeans }}</p>
+            </div>
+          }
+
+          @if (ov.tip) {
+            <div class="tip-line">
+              🛡️ <strong>Regla práctica:</strong> {{ ov.tip }}
+            </div>
+          }
+        </div>
+
+        @if (ov.missedParts && ov.missedParts.length > 0) {
+          <div class="feedback-card missed-list-card">
+            <span class="card-kicker">SEÑALES QUE PASASTE POR ALTO</span>
+            <ul>
+              @for (m of ov.missedParts; track m.id) {
+                <li>
+                  <strong>⚠️ {{ m.text }}</strong>
+                  <small>{{ m.why }}</small>
+                </li>
+              }
+            </ul>
+          </div>
+        }
+
+        @if (!ov.isPositive) {
+          <div class="lives-remaining-pill">
+            <span>
+              {{ lives() > 0 ? `Te quedan ${lives()} ${lives() === 1 ? 'vida' : 'vidas'}` : 'Te quedaste sin vidas' }}
+            </span>
+            <span class="pill-hearts">
+              @for (h of hearts(); track $index) {
+                <span>{{ h ? '❤️' : '🤍' }}</span>
+              }
+            </span>
+          </div>
+        }
+
+        <div class="overlay-progress-count">
+          {{ evaluatedCount() }} de {{ scenario().parts.length }} elementos evaluados en este escenario
+        </div>
+
+        <div class="overlay-actions">
+          <button
+            type="button"
+            class="overlay-continue-btn"
+            [class.ok]="ov.isPositive"
+            [class.bad]="!ov.isPositive"
+            (click)="handleOverlayAction()"
+          >
+            {{
+              ov.actionType === 'finish-lost'
+                ? 'Ver resumen del intento →'
+                : ov.actionType === 'advance'
+                  ? (index() + 1 >= module().scenarios.length ? 'Finalizar módulo →' : 'Siguiente escenario →')
+                  : 'Continuar →'
+            }}
+          </button>
+
+          @if (ov.glossaryTermId) {
+            <button
+              type="button"
+              class="overlay-glossary-link"
+              (click)="openHelp(ov.glossaryCategory, ov.glossaryTermId)"
+            >
+              📚 Leer más en el Glosario
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- =====================================================
+       LOST SCREEN
+  ====================================================== -->
+  @if (status() === 'lost') {
+    <div class="end lost-end">
+      <div class="end-icon">💔</div>
+      <h1>Te quedaste sin vidas</h1>
+      <p>
+        Lograste acumular <strong>{{ xp() }} XP</strong> en este intento. No te preocupes: equivocarse aquí es la mejor forma de aprender antes de que pase en la vida real.
+      </p>
+
+      <div class="end-buttons">
+        <button type="button" class="help-btn large" (click)="openHelp()">
+          📚 Repasar Glosario de Ayuda
+        </button>
+        <button type="button" class="primary" (click)="retry()">
+          Reintentar módulo <span>↺</span>
+        </button>
+        <a class="exit-btn" routerLink="/profile">Regresar a mi perfil</a>
+      </div>
+    </div>
+  }
+
+  <!-- =====================================================
+       WON SCREEN
+  ====================================================== -->
+  @if (status() === 'won') {
+    <div class="end won-end">
+      <div class="end-icon">🏆</div>
+      <h1>¡Módulo completado con éxito!</h1>
+      <p>
+        ¡Excelente criterio! Has completado <strong>{{ module().title }}</strong> y tu progreso ya quedó guardado en tu perfil.
+      </p>
+
+      <div class="won-summary-grid">
+        <div>
+          <strong>+{{ xp() }} XP</strong>
+          <small>Experiencia ganada</small>
+        </div>
+        <div>
+          <strong>{{ lives() }} / {{ maxLives }} ❤️</strong>
+          <small>Vidas conservadas</small>
+        </div>
+        <div>
+          <strong>{{ accuracyScore() }}%</strong>
+          <small>Puntaje obtenido</small>
+        </div>
+      </div>
+
+      <div class="end-buttons">
+        @if (module().nextRoute) {
+          <a class="primary" [routerLink]="module().nextRoute">
+            Siguiente: {{ module().nextTitle }} <span>→</span>
+          </a>
+        }
+        <a class="secondary-action-btn" routerLink="/profile">
+          Ver mi perfil y logros
+        </a>
+        <button type="button" class="exit-btn" (click)="retry()">
+          Volver a practicar ↺
+        </button>
+      </div>
+    </div>
+  }
+</div>
+
+<app-help-glossary
+  [open]="glossaryOpen()"
+  [moduleTitle]="module().title"
+  [moduleTips]="module().tips"
+  [initialCategory]="glossaryCategory()"
+  [initialTermId]="glossaryTermId()"
+  (closed)="glossaryOpen.set(false)"
+/>
