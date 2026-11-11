@@ -1,0 +1,65 @@
+@if (!started()) {
+  <div class="game-shell">
+    <div class="game-nav-top">
+      <a routerLink="/profile" class="back-link">
+        <span>←</span> Volver a mi perfil
+      </a>
+      <div class="top-actions">
+        <button type="button" class="intro-help-btn" (click)="glossaryOpen.set(true)">
+          📚 Glosario y Ayuda
+        </button>
+        <div class="brand-badge">Clickable<span>.</span></div>
+      </div>
+    </div>
+
+    <section class="intro-card">
+      <div class="module-badge">
+        <span>MÓDULO 02 DE 04 · NAVEGACIÓN Y WEB</span>
+      </div>
+
+      <div class="icon">{{ data.icon }}</div>
+      <h1>{{ data.title }}</h1>
+      <p class="desc">{{ data.description }}</p>
+
+      <div class="tips-box">
+        <h3>💡 Claves antes de jugar</h3>
+        <ul>
+          @for (t of data.tips; track t) {
+            <li>{{ t }}</li>
+          }
+        </ul>
+      </div>
+
+      <div class="rules-bar">
+        <span class="rule-pill">❤️ 3 vidas</span>
+        <span class="rule-pill">🎯 {{ data.scenarios.length }} escenarios reales</span>
+        <span class="rule-pill">⚠️ Toca solo lo sospechoso</span>
+      </div>
+
+      <div class="intro-cta-row">
+        <button type="button" class="primary-btn" (click)="started.set(true)">
+          Empezar entrenamiento <span>→</span>
+        </button>
+        <button type="button" class="secondary-btn" (click)="glossaryOpen.set(true)">
+          ¿Qué es Typosquatting? Ver guía 📚
+        </button>
+      </div>
+    </section>
+  </div>
+
+  <app-help-glossary
+    [open]="glossaryOpen()"
+    [moduleTitle]="data.title"
+    [moduleTips]="data.tips"
+    [initialCategory]="data.glossaryCategory || 'web'"
+    (closed)="glossaryOpen.set(false)"
+  />
+} @else {
+  <div class="game-shell game-active-shell">
+    <app-game-board
+      [module]="data"
+      (finished)="onFinished($event)"
+      (attempted)="onAttempted($event)"
+    />
+  </div>
+}
