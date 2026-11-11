@@ -928,3 +928,236 @@
     align-items: flex-start;
   }
 }
+
+/* Enhancements for real user profile, mobile nav, module badges, and glossary trigger */
+:host .nav-btn-link {
+  background: transparent;
+  border: 0;
+  padding: 28px 0;
+  border-bottom: 2px solid transparent;
+  color: var(--muted);
+  font-size: .82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color .2s ease, border-color .2s ease;
+}
+
+:host .nav-btn-link:hover {
+  color: var(--ink);
+  border-color: var(--green);
+}
+
+:host .nav-btn-link.logout-link:hover {
+  color: #c93b3b;
+  border-color: #c93b3b;
+}
+
+:host .mini-avatar-img,
+:host .large-avatar-img {
+  object-fit: cover;
+  display: block;
+}
+
+:host .mini-avatar-img {
+  width: 35px;
+  height: 35px;
+  border-radius: 10px;
+}
+
+:host .large-avatar-img {
+  width: 82px;
+  height: 82px;
+  border-radius: 24px;
+  border: 2px solid rgba(29, 155, 104, .3);
+}
+
+:host .mini-avatar,
+:host .large-avatar {
+  font-family: "Space Grotesk", sans-serif;
+  font-weight: 700;
+}
+
+:host .header-cta-group {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 0 0 auto;
+}
+
+:host .help-outline-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 9px;
+  border: 1px solid rgba(23, 33, 31, .16);
+  background: rgba(255, 255, 255, .88);
+  color: var(--ink);
+  font-size: .78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .2s ease;
+}
+
+:host .help-outline-btn:hover {
+  background: #ffffff;
+  border-color: var(--green);
+  color: var(--green-dark);
+}
+
+:host .modules-subtitle-badge {
+  padding: 6px 11px;
+  border-radius: 999px;
+  background: #edf5ef;
+  color: var(--green-dark);
+  font-size: .7rem;
+  font-weight: 700;
+}
+
+:host .module {
+  padding: 14px 12px;
+  border-radius: 12px;
+}
+
+:host .module-title-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+:host .mod-pill {
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: .64rem;
+  font-weight: 700;
+}
+
+:host .mod-pill.done {
+  background: var(--green-pale);
+  color: var(--green-dark);
+}
+
+:host .mod-pill.recommended {
+  background: #fff3d6;
+  color: #9a6507;
+}
+
+:host .mod-pill.open {
+  background: #eef2f0;
+  color: #5b6862;
+}
+
+:host .module-status,
+:host .module-arrow {
+  font-size: .78rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+:host .reset-zone {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid #edf1ed;
+}
+
+:host .reset-link {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  color: var(--muted);
+  font-size: .72rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+:host .reset-link:hover {
+  color: #c93b3b;
+  text-decoration: underline;
+}
+
+:host .reset-confirm {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+:host .reset-confirm small {
+  font-size: .72rem;
+  color: #991b1b;
+  font-weight: 600;
+}
+
+:host .reset-confirm div {
+  display: flex;
+  gap: 6px;
+}
+
+:host .confirm-yes,
+:host .confirm-no {
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 0;
+  font-size: .72rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+:host .confirm-yes {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+:host .confirm-no {
+  background: #edf2ef;
+  color: var(--ink);
+}
+
+:host .mobile-profile-bar {
+  display: none;
+}
+
+@media (max-width: 680px) {
+  :host .dashboard-header {
+    height: auto;
+  }
+
+  :host .dashboard-header .dashboard-container {
+    height: 62px;
+  }
+
+  :host .mobile-profile-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    gap: 8px;
+    padding: 8px 14px;
+    border-top: 1px solid rgba(23, 33, 31, .06);
+    background: #ffffff;
+  }
+
+  :host .mobile-profile-bar a,
+  :host .mobile-profile-bar button {
+    background: transparent;
+    border: 0;
+    color: var(--ink);
+    font-size: .76rem;
+    font-weight: 700;
+    padding: 4px 8px;
+    cursor: pointer;
+  }
+
+  :host .mobile-profile-bar .logout-mobile {
+    color: #c93b3b;
+  }
+
+  :host .header-cta-group {
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+}
