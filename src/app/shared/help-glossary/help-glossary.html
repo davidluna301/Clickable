@@ -1,0 +1,136 @@
+@if (open()) {
+  <div class="glossary-backdrop" (click)="close()" aria-hidden="true"></div>
+
+  <aside class="glossary-drawer" role="dialog" aria-modal="true" aria-label="Centro de ayuda y glosario de seguridad digital">
+    <header class="drawer-header">
+      <div>
+        <span class="drawer-kicker">BIBLIOTECA DE SEGURIDAD</span>
+        <h2>Ayuda y Glosario</h2>
+      </div>
+      <button type="button" class="close-btn" (click)="close()" aria-label="Cerrar panel de ayuda">
+        ✕
+      </button>
+    </header>
+
+    <div class="drawer-body">
+      @if (moduleTips().length > 0) {
+        <section class="module-help-box">
+          <div class="module-help-head">
+            <span>💡</span>
+            <div>
+              <strong>Pistas para {{ moduleTitle() || 'este módulo' }}</strong>
+              <small>Úsalas para identificar las señales sin adivinar</small>
+            </div>
+          </div>
+          <ul>
+            @for (tip of moduleTips(); track tip) {
+              <li>{{ tip }}</li>
+            }
+          </ul>
+        </section>
+      }
+
+      <div class="how-to-box">
+        <button type="button" class="how-to-toggle" (click)="showHowToPlay.set(!showHowToPlay())">
+          <span>🎮 ¿Cómo se juega este desafío?</span>
+          <b>{{ showHowToPlay() ? 'Ocultar' : 'Ver guía' }}</b>
+        </button>
+
+        @if (showHowToPlay()) {
+          <ol class="how-to-steps">
+            <li><strong>Observa el escenario:</strong> revisa remitente, URL, asunto, botones y permisos como en la vida real.</li>
+            <li><strong>Toca solo lo sospechoso:</strong> cada señal correcta suma <strong>+10 XP</strong> y te explica qué tipo de amenaza es.</li>
+            <li><strong>Cuidado con las falsas alarmas:</strong> si tocas un elemento legítimo pierdes 1 vida, pero te explicamos por qué es seguro.</li>
+            <li><strong>Confirma tu análisis:</strong> cuando creas que no quedan amenazas (o si el sitio es 100% seguro), pulsa <em>Confirmar análisis</em>.</li>
+          </ol>
+        }
+      </div>
+
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input
+          type="search"
+          [ngModel]="searchQuery()"
+          (ngModelChange)="searchQuery.set($event)"
+          placeholder="Buscar término (ej: phishing, OTP, QR, .exe)..."
+        />
+      </div>
+
+      <div class="category-pills" role="tablist" aria-label="Filtrar glosario por categoría">
+        @for (cat of categories; track cat.id) {
+          <button
+            type="button"
+            class="cat-pill"
+            [class.active]="selectedCategory() === cat.id"
+            (click)="selectCategory(cat.id)"
+          >
+            <span>{{ cat.icon }}</span>
+            {{ cat.label }}
+          </button>
+        }
+      </div>
+
+      <div class="entries-list">
+        @for (entry of filteredEntries(); track entry.id) {
+          <article class="entry-card" [class.expanded]="expandedId() === entry.id">
+            <button type="button" class="entry-trigger" (click)="toggleTerm(entry.id)">
+              <span class="entry-icon">{{ entry.icon }}</span>
+              <div class="entry-summary">
+                <span class="entry-cat">{{ entry.categoryLabel }}</span>
+                <h3>{{ entry.term }}</h3>
+                <p>{{ entry.tagline }}</p>
+              </div>
+              <span class="chevron">{{ expandedId() === entry.id ? '▲' : '▼' }}</span>
+            </button>
+
+            @if (expandedId() === entry.id) {
+              <div class="entry-details">
+                <div class="detail-block">
+                  <h4>¿Qué significa?</h4>
+                  <p>{{ entry.definition }}</p>
+                </div>
+
+                <div class="detail-block danger-note">
+                  <h4>⚠️ ¿Por qué es peligroso?</h4>
+                  <p>{{ entry.whyDangerous }}</p>
+                </div>
+
+                <div class="examples-compare">
+                  <div class="example-box bad">
+                    <strong>❌ Señal de estafa / riesgo</strong>
+                    <span>{{ entry.badExample }}</span>
+                  </div>
+                  <div class="example-box good">
+                    <strong>✅ Comportamiento seguro</strong>
+                    <span>{{ entry.goodExample }}</span>
+                  </div>
+                </div>
+
+                <div class="tips-block">
+                  <h4>🛡️ Cómo protegerte</h4>
+                  <ul>
+                    @for (t of entry.tips; track t) {
+                      <li>{{ t }}</li>
+                    }
+                  </ul>
+                </div>
+              </div>
+            }
+          </article>
+        } @empty {
+          <div class="empty-results">
+            <span>🔎</span>
+            <p>No encontramos conceptos para "{{ searchQuery() }}".</p>
+            <button type="button" (click)="searchQuery.set(''); selectCategory('all')">
+              Ver todos los conceptos
+            </button>
+          </div>
+        }
+      </div>
+    </div>
+
+    <footer class="drawer-footer">
+      <span>🛡️ Regla de oro: Un segundo de duda puede proteger tus datos.</span>
+    </footer>
+  </aside>
+}
