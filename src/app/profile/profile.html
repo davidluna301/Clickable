@@ -1,364 +1,426 @@
 <section class="profile-screen" id="profile">
-  <!-- HEADER -->
-  <header class="dashboard-header">
-    <div class="dashboard-container">
-      <a routerLink="/home" class="logo">
-        <span class="logo-icon">C</span>
-        <span>Clickable<span class="green">.</span></span>
+  <!-- TOP GLASS NAVBAR -->
+  <header class="dash-nav-wrap">
+    <div class="dash-container dash-nav-inner">
+      <a routerLink="/home" class="brand">
+        <span class="brand-mark">C</span>
+        <span>Clickable<span class="mint">.</span></span>
       </a>
 
-      <nav class="dashboard-nav" aria-label="Navegación de perfil">
+      <nav class="dash-links" aria-label="Navegación de perfil">
         <a routerLink="/home">Inicio</a>
         <a routerLink="/profile" class="active">Mi perfil</a>
-        <button type="button" class="nav-btn-link" (click)="glossaryOpen.set(true)">
-          📚 Ayuda y Glosario
-        </button>
-        <button type="button" class="nav-btn-link logout-link" (click)="logout()">
-          Cerrar sesión
+        <a routerLink="/classroom">Modo Aula</a>
+        <button type="button" class="nav-action-link" (click)="glossaryOpen.set(true)">
+          <span class="material-symbols-rounded sm">menu_book</span>
+          Glosario
         </button>
       </nav>
 
-      <div class="user-mini">
-        @if (auth.currentUser()?.photoURL) {
-          <img
-            class="mini-avatar-img"
-            [src]="auth.currentUser()?.photoURL"
-            [alt]="auth.currentUser()?.displayName || 'Avatar'"
-          />
-        } @else {
-          <div class="mini-avatar">{{ auth.userInitials() }}</div>
-        }
-
-        <div>
-          <strong>{{ auth.currentUser()?.displayName || 'Mi espacio' }}</strong>
-          <small>Nivel 0{{ progress.stats().level }} · {{ progress.stats().xp }} XP</small>
+      <div class="nav-right">
+        <div class="user-pill">
+          @if (auth.currentUser()?.photoURL) {
+            <img
+              class="mini-avatar-img"
+              [src]="auth.currentUser()?.photoURL"
+              [alt]="auth.currentUser()?.displayName || 'Avatar'"
+            />
+          } @else {
+            <div class="mini-avatar">{{ auth.userInitials() }}</div>
+          }
+          <span class="user-pill-name">{{ auth.currentUser()?.firstName || 'Mi cuenta' }}</span>
         </div>
+
+        <button type="button" class="logout-pill" (click)="logout()" title="Cerrar sesión">
+          <span class="material-symbols-rounded sm">logout</span>
+          <span>Salir</span>
+        </button>
       </div>
     </div>
 
     <!-- Mobile quick bar -->
-    <div class="mobile-profile-bar">
-      <a routerLink="/home">Inicio</a>
-      <button type="button" (click)="glossaryOpen.set(true)">📚 Glosario</button>
-      <button type="button" class="logout-mobile" (click)="logout()">Cerrar sesión</button>
+    <div class="mobile-bar">
+      <a routerLink="/home">
+        <span class="material-symbols-rounded sm">home</span>
+        Inicio
+      </a>
+      <a routerLink="/classroom">
+        <span class="material-symbols-rounded sm">school</span>
+        Aula
+      </a>
+      <button type="button" (click)="glossaryOpen.set(true)">
+        <span class="material-symbols-rounded sm">menu_book</span>
+        Glosario
+      </button>
+      <button type="button" class="logout-mobile" (click)="logout()">
+        <span class="material-symbols-rounded sm">logout</span>
+        Salir
+      </button>
     </div>
   </header>
 
-  <!-- DASHBOARD -->
-  <main class="dashboard-container dashboard">
-    <!-- PROFILE HEADER -->
-    <section class="profile-header">
-      <div class="profile-user">
-        @if (auth.currentUser()?.photoURL) {
-          <img
-            class="large-avatar-img"
-            [src]="auth.currentUser()?.photoURL"
-            [alt]="auth.currentUser()?.displayName || 'Avatar'"
-          />
-        } @else {
-          <div class="large-avatar">{{ auth.userInitials() }}</div>
-        }
-
-        <div>
-          <span class="profile-label">
-            PERFIL DE ENTRENAMIENTO · {{ auth.currentUser()?.email }}
-          </span>
-          <h1>¡Hola, {{ auth.currentUser()?.firstName || 'Defensor' }}!</h1>
+  <!-- MAIN WORKSPACE -->
+  <main class="dash-container dash-main-wrap">
+    @if (lockedAlert(); as lockNotice) {
+      <div class="locked-alert-banner" role="alert">
+        <div class="locked-alert-icon">
+          <span class="material-symbols-rounded md">lock</span>
+        </div>
+        <div class="locked-alert-body">
+          <strong>Módulo bloqueado: {{ lockNotice.moduleName }}</strong>
           <p>
-            {{ auth.currentUser()?.displayName }} · Sigue entrenando en los módulos interactivos para detectar amenazas antes de hacer clic.
+            Completa primero el <b>Módulo {{ lockNotice.requiredOrder }}</b> para desbloquear este simulador.
+          </p>
+        </div>
+        <button type="button" class="locked-alert-close" (click)="dismissLockedAlert()" aria-label="Cerrar aviso">
+          <span class="material-symbols-rounded sm">close</span>
+        </button>
+      </div>
+    }
+
+    <!-- CLEAN COMPACT COMMAND HEADER (Single Source of Truth) -->
+    <section class="hero-command">
+      <div class="hero-rings" aria-hidden="true"></div>
+
+      <div class="hero-identity">
+        <div class="hero-avatar-wrap">
+          @if (auth.currentUser()?.photoURL) {
+            <img
+              class="hero-avatar-img"
+              [src]="auth.currentUser()?.photoURL"
+              [alt]="auth.currentUser()?.displayName || 'Avatar'"
+            />
+          } @else {
+            <div class="hero-avatar">{{ auth.userInitials() }}</div>
+          }
+          <span class="status-dot" title="Sesión activa"></span>
+        </div>
+
+        <div class="hero-copy">
+          <div class="hero-tag-row">
+            <span class="hero-badge">
+              <span class="material-symbols-rounded xs">alternate_email</span>
+              {{ auth.currentUser()?.email }}
+            </span>
+            <span class="rank-chip">
+              <span class="material-symbols-rounded xs">military_tech</span>
+              Nivel 0{{ stats().level }} · {{ stats().levelName }}
+            </span>
+          </div>
+
+          <h1>Hola, <span>{{ auth.currentUser()?.firstName || 'Defensor' }}</span></h1>
+          <p>
+            @if (stats().modulesCompleted === stats().totalModules) {
+              Dominaste todos los simuladores de Clickable. Repasa cualquier escenario cuando quieras.
+            } @else if (inProgressModule(); as activeMod) {
+              Simulación en curso en <strong>{{ activeMod.name }}</strong> (escenario {{ checkpointScenarioHuman(activeMod) }}/{{ activeMod.totalScenarios }}).
+            } @else {
+              Entrena con simulaciones reales. Supera cada módulo para desbloquear el siguiente reto.
+            }
           </p>
         </div>
       </div>
 
-      <div class="header-cta-group">
-        <a [routerLink]="progress.nextRecommendedModule().route" class="edit-button">
-          {{ progress.stats().modulesCompleted === 0 ? 'Empezar módulo 1' : 'Continuar entrenando' }}
-          <span>🎮</span>
-        </a>
-        <button type="button" class="help-outline-btn" (click)="glossaryOpen.set(true)">
-          📚 Centro de ayuda
-        </button>
-      </div>
-    </section>
-
-    <section class="profile-stats" aria-label="Resumen de progreso">
-      <div class="profile-stat">
-        <span class="stat-icon">✓</span>
-        <div>
-          <strong>{{ progress.stats().modulesCompleted }} / {{ progress.stats().totalModules }}</strong>
-          <small>Módulos completados</small>
-        </div>
-      </div>
-
-      <div class="profile-stat">
-        <span class="stat-icon">⚡</span>
-        <div>
-          <strong>{{ progress.stats().xp }}</strong>
-          <small>Puntos de experiencia (XP)</small>
-        </div>
-      </div>
-
-      <div class="profile-stat">
-        <span class="stat-icon">🏅</span>
-        <div>
-          <strong>{{ progress.stats().badgesUnlocked }} / 4</strong>
-          <small>Insignias desbloqueadas</small>
-        </div>
-      </div>
-
-      <div class="profile-stat">
-        <span class="stat-icon">🔥</span>
-        <div>
-          <strong>{{ progress.stats().streakDays }} {{ progress.stats().streakDays === 1 ? 'día' : 'días' }}</strong>
-          <small>Racha de aprendizaje</small>
-        </div>
-      </div>
-    </section>
-
-    <!-- MAIN GRID -->
-    <div class="dashboard-grid">
-      <!-- LEFT -->
-      <div class="dashboard-main">
-        <!-- PROGRESS -->
-        <section class="dashboard-card progress-card">
-          <div class="card-top">
-            <div>
-              <span class="profile-label">TU PROGRESO</span>
-              <h2>
-                @if (progress.overallPercentage() === 100) {
-                  ¡Felicidades, {{ auth.currentUser()?.firstName }}! Completaste todos los módulos.
-                } @else if (progress.overallPercentage() > 0) {
-                  Vas muy bien, sigue reforzando tu criterio.
-                } @else {
-                  ¡Comienza tu entrenamiento hoy!
-                }
-              </h2>
-            </div>
-
-            <div class="level-badge">
-              NIVEL 0{{ progress.stats().level }}
-            </div>
+      <div class="hero-actions">
+        <div class="hero-progress-strip">
+          <div class="strip-top">
+            <span>Progreso del entrenamiento</span>
+            <strong>{{ stats().modulesCompleted }} / {{ stats().totalModules }} módulos ({{ progress.overallPercentage() }}%)</strong>
           </div>
-
-          <div class="progress-number">
-            <strong>{{ progress.overallPercentage() }}%</strong>
-            <span>completado</span>
-          </div>
-
-          <div class="big-progress">
+          <div class="mastery-track">
             <span [style.width.%]="progress.overallPercentage()"></span>
           </div>
+        </div>
 
-          <div class="progress-details">
-            <span>
-              {{ progress.stats().modulesCompleted }} de {{ progress.stats().totalModules }} módulos completados
+        <div class="hero-btn-row">
+          <a [routerLink]="progress.nextRecommendedModule().route" class="btn-mint-primary">
+            <span class="material-symbols-rounded sm">
+              {{ inProgressModule() ? 'play_circle' : 'sports_esports' }}
             </span>
-            <span>
-              {{ progress.stats().totalModules - progress.stats().modulesCompleted }} módulos restantes
-            </span>
-          </div>
-        </section>
-
-        <!-- MODULES -->
-        <section class="dashboard-card">
-          <div class="section-title">
-            <div>
-              <span class="profile-label">APRENDIZAJE PRÁCTICO</span>
-              <h2>Módulos para aprender</h2>
-            </div>
-
-            <span class="modules-subtitle-badge">4 Módulos interactivos</span>
-          </div>
-
-          <div class="modules">
-            @for (m of progress.modules(); track m.id; let idx = $index) {
-              <a
-                [routerLink]="m.route"
-                class="module"
-                [class.completed]="m.completed"
-                [class.current]="!m.completed && getModuleClass(m.id) === 'current'"
-              >
-                <div class="module-icon">
-                  {{ m.completed ? '✓' : m.icon }}
-                </div>
-
-                <div class="module-info">
-                  <div class="module-title-row">
-                    <strong>{{ idx + 1 }}. {{ m.name }}</strong>
-                    @if (m.completed) {
-                      <span class="mod-pill done">Completado</span>
-                    } @else if (getModuleClass(m.id) === 'current') {
-                      <span class="mod-pill recommended">Siguiente paso</span>
-                    } @else {
-                      <span class="mod-pill open">Disponible</span>
-                    }
-                  </div>
-                  <small>
-                    @if (m.completed) {
-                      Mejor puntaje: {{ m.score }}% · +{{ m.xpEarned }} XP · Toca para practicar de nuevo
-                    } @else {
-                      {{ m.subtitle }}
-                    }
-                  </small>
-                </div>
-
-                <span [class]="m.completed ? 'module-status' : 'module-arrow'">
-                  {{ m.completed ? 'Repasar →' : 'Jugar →' }}
-                </span>
-              </a>
+            @if (inProgressModule(); as activeMod) {
+              Reanudar Módulo {{ activeMod.order }}
+            } @else if (stats().modulesCompleted === stats().totalModules) {
+              Repasar simuladores
+            } @else {
+              Empezar Módulo {{ progress.nextRecommendedModule().order }}
             }
+          </a>
+
+          <button type="button" class="btn-glass-dark" (click)="glossaryOpen.set(true)">
+            <span class="material-symbols-rounded sm">menu_book</span>
+            Glosario
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3 NON-DUPLICATED TELEMETRY KPIs -->
+    <section class="kpi-strip" aria-label="Métricas reales">
+      <article class="kpi-card">
+        <div class="kpi-ico kpi-mint">
+          <span class="material-symbols-rounded md">bolt</span>
+        </div>
+        <div>
+          <strong>{{ stats().xp }} XP</strong>
+          <span>Experiencia real · {{ stats().xpToNextLevel }} XP para Nivel 0{{ stats().level + 1 }}</span>
+        </div>
+      </article>
+
+      <article class="kpi-card">
+        <div class="kpi-ico kpi-blue">
+          <span class="material-symbols-rounded md">track_changes</span>
+        </div>
+        <div>
+          <strong>{{ stats().hasPlayedAny && stats().averageAccuracy > 0 ? stats().averageAccuracy + '%' : 'Sin datos' }}</strong>
+          <span>
+            Precisión ·
+            {{ stats().totalAttempts > 0 ? stats().totalAttempts + (stats().totalAttempts === 1 ? ' partida' : ' partidas') : 'Completa un módulo' }}
+          </span>
+        </div>
+      </article>
+
+      <article class="kpi-card">
+        <div class="kpi-ico kpi-dark-ico">
+          <span class="material-symbols-rounded md">shield</span>
+        </div>
+        <div>
+          <strong>{{ stats().totalThreatsDetected }}</strong>
+          <span>Amenazas reales detectadas</span>
+        </div>
+      </article>
+    </section>
+
+    <!-- BANNER DE INSIGNIA DE CIBERSEGURIDAD (REQ 4: >= 80% o todos los módulos completados) -->
+    <section class="cyber-badge-banner" [class.is-certified]="progress.hasCyberSecurityBadge()">
+      <div class="cyber-badge-content">
+        <div class="cyber-badge-shield">
+          <span class="material-symbols-rounded xl">
+            {{ progress.hasCyberSecurityBadge() ? 'verified' : 'military_tech' }}
+          </span>
+        </div>
+
+        <div class="cyber-badge-info">
+          <div class="cyber-badge-tag">
+            <span class="material-symbols-rounded xs">workspace_premium</span>
+            CERTIFICACIÓN DE CIBERSEGURIDAD
           </div>
-        </section>
-
-        <!-- ACHIEVEMENTS -->
-        <section class="dashboard-card">
-          <div class="section-title">
-            <div>
-              <span class="profile-label">LOGROS</span>
-              <h2>Tus insignias</h2>
-            </div>
-          </div>
-
-          <div class="achievements">
-            <div
-              class="achievement"
-              [class.unlocked]="progress.stats().badgesUnlocked >= 1"
-              [class.locked]="progress.stats().badgesUnlocked < 1"
-            >
-              <div>🎯</div>
-              <strong>Primer clic</strong>
-              <small>Juega tu primer desafío</small>
-            </div>
-
-            <div
-              class="achievement"
-              [class.unlocked]="progress.stats().badgesUnlocked >= 2"
-              [class.locked]="progress.stats().badgesUnlocked < 2"
-            >
-              <div>🛡️</div>
-              <strong>Clic seguro</strong>
-              <small>Completa 1 módulo</small>
-            </div>
-
-            <div
-              class="achievement"
-              [class.unlocked]="progress.stats().badgesUnlocked >= 3"
-              [class.locked]="progress.stats().badgesUnlocked < 3"
-            >
-              <div>🔎</div>
-              <strong>Detective</strong>
-              <small>Completa 2 módulos</small>
-            </div>
-
-            <div
-              class="achievement"
-              [class.unlocked]="progress.stats().badgesUnlocked >= 4"
-              [class.locked]="progress.stats().badgesUnlocked < 4"
-            >
-              <div>🏆</div>
-              <strong>Experto</strong>
-              <small>Todos los módulos</small>
-            </div>
-          </div>
-        </section>
-
-        <section class="dashboard-card activity-card">
-          <div class="section-title">
-            <div>
-              <span class="profile-label">ACTIVIDAD RECIENTE</span>
-              <h2>Tu recorrido</h2>
-            </div>
-            <span class="activity-streak">Historial de juego</span>
-          </div>
-
-          <div class="activity-list">
-            @for (act of progress.activities(); track act.id) {
-              <article class="activity-item">
-                <span class="activity-icon">{{ act.icon }}</span>
-                <div>
-                  <strong>{{ act.title }}</strong>
-                  <small>{{ act.timeAgo }}</small>
-                </div>
-                <b>{{ act.xpText }}</b>
-              </article>
-            }
-          </div>
-        </section>
+          <h3>
+            {{ progress.hasCyberSecurityBadge() ? '¡Insignia de Ciberseguridad Otorgada!' : 'Insignia de Ciberseguridad (En progreso)' }}
+          </h3>
+          <p>
+            {{
+              progress.hasCyberSecurityBadge()
+                ? 'Has demostrado criterio técnico excepcional al superar los simuladores de ciberseguridad con al menos el 80% de precisión o la totalidad de los módulos formativos.'
+                : 'Completa todos los 8 módulos formativos o mantén al menos un 80% de precisión global para desbloquear tu Insignia Oficial y Reconocimiento de Navegación Crítica.'
+            }}
+          </p>
+        </div>
       </div>
 
-      <!-- RIGHT SIDEBAR -->
-      <aside class="dashboard-sidebar">
-        <!-- LEVEL -->
-        <section class="side-card level-card">
-          <span class="profile-label">TU NIVEL</span>
-          <div class="level-number">0{{ progress.stats().level }}</div>
-          <h3>{{ progress.stats().levelName }}</h3>
-          <p>Estás desarrollando sólidos hábitos de seguridad digital.</p>
+      <div class="cyber-badge-action">
+        @if (progress.hasCyberSecurityBadge()) {
+          <button type="button" class="btn primary glow" (click)="showCertificateModal.set(true)">
+            <span class="material-symbols-rounded sm">workspace_premium</span>
+            Ver Reconocimiento Oficial
+          </button>
+        } @else {
+          <div class="progress-metric-pill">
+            <span>Precisión: <b>{{ stats().averageAccuracy }}%</b> / 80%</span>
+            <span>Módulos: <b>{{ stats().modulesCompleted }}</b> / {{ stats().totalModules }}</span>
+          </div>
+        }
+      </div>
+    </section>
 
-          <div class="side-progress">
-            <span
-              [style.width.%]="((progress.stats().xp % 150) / 150) * 100 || (progress.stats().xp > 0 ? 100 : 12)"
-            ></span>
+    <!-- CLEAN 2-COLUMN WORKSPACE: ROADMAP + COMPACT SIDEBAR -->
+    <div class="dash-grid">
+      <!-- LEFT: SEQUENTIAL SIMULATOR MODULES -->
+      <section class="panel-card">
+        <div class="panel-head">
+          <div>
+            <span class="eyebrow">SIMULADORES PROGRESIVOS</span>
+            <h2>Tu ruta de aprendizaje</h2>
+          </div>
+          <span class="head-chip">
+            <span class="material-symbols-rounded xs">lock_open</span>
+            {{ stats().modulesCompleted }} de {{ stats().totalModules }} completados
+          </span>
+        </div>
+
+        <div class="roadmap-list">
+          @for (m of progress.modules(); track m.id) {
+            @if (m.unlocked) {
+              <a
+                [routerLink]="m.route"
+                class="roadmap-item"
+                [class.is-completed]="m.completed"
+                [class.is-current]="!m.completed && getModuleClass(m.id) === 'current'"
+                [class.has-checkpoint]="!m.completed && m.checkpoint !== null"
+              >
+                <div class="mod-icon-box" [class.done]="m.completed" [class.active]="!m.completed && getModuleClass(m.id) === 'current'">
+                  <span class="material-symbols-rounded md">
+                    {{ m.completed ? 'task_alt' : m.icon }}
+                  </span>
+                </div>
+
+                <div class="mod-content">
+                  <div class="mod-top-line">
+                    <span class="mod-order">0{{ m.order }}</span>
+                    <span class="mod-cat">{{ m.categoryTag }}</span>
+
+                    @if (m.completed) {
+                      <span class="mod-badge badge-done">Completado · {{ m.score }}%</span>
+                    } @else if (m.checkpoint) {
+                      <span class="mod-badge badge-progress">
+                        En curso · {{ checkpointScenarioHuman(m) }}/{{ m.totalScenarios }}
+                      </span>
+                    } @else {
+                      <span class="mod-badge badge-next">Disponible</span>
+                    }
+                  </div>
+
+                  <h3>{{ m.name }}</h3>
+                  <p>{{ m.subtitle }}</p>
+
+                  @if (m.completed) {
+                    <div class="mod-metrics-row">
+                      <span><span class="material-symbols-rounded xs">bolt</span> +{{ m.xpEarned }} XP</span>
+                      <span><span class="material-symbols-rounded xs">favorite</span> {{ m.bestLives }}/3 vidas</span>
+                      <span><span class="material-symbols-rounded xs">gpp_maybe</span> {{ m.threatsDetectedBest }} señales</span>
+                    </div>
+                  } @else if (m.checkpoint; as cp) {
+                    <div class="checkpoint-strip">
+                      <div class="cp-track">
+                        <span [style.width.%]="checkpointPct(m)"></span>
+                      </div>
+                      <div class="cp-meta">
+                        <span>{{ cp.xp }} XP · {{ cp.lives }}/3 vidas</span>
+                        <button
+                          type="button"
+                          class="cp-discard"
+                          (click)="discardCheckpoint($event, m.id)"
+                        >
+                          Reiniciar módulo
+                        </button>
+                      </div>
+                    </div>
+                  }
+                </div>
+
+                <div class="mod-cta">
+                  <span>{{ m.completed ? 'Repasar' : m.checkpoint ? 'Reanudar' : 'Simular' }}</span>
+                  <span class="material-symbols-rounded sm">arrow_forward</span>
+                </div>
+              </a>
+            } @else {
+              <button
+                type="button"
+                class="roadmap-item is-locked"
+                [class.shake-lock]="lockedShakeId() === m.id"
+                (click)="notifyLocked(m)"
+              >
+                <div class="mod-icon-box locked">
+                  <span class="material-symbols-rounded md">lock</span>
+                </div>
+
+                <div class="mod-content">
+                  <div class="mod-top-line">
+                    <span class="mod-order">0{{ m.order }}</span>
+                    <span class="mod-cat">{{ m.categoryTag }}</span>
+                    <span class="mod-badge badge-locked">Bloqueado</span>
+                  </div>
+
+                  <h3>{{ m.name }}</h3>
+                  <p>Completa el <b>Módulo 0{{ m.order - 1 }}</b> para desbloquear.</p>
+                </div>
+
+                <div class="mod-cta muted">
+                  <span class="material-symbols-rounded sm">lock</span>
+                </div>
+              </button>
+            }
+          }
+        </div>
+      </section>
+
+      <!-- RIGHT: COMPACT ACHIEVEMENTS, RECENT ACTIVITY & SESSION SETTINGS -->
+      <aside class="dash-right">
+        <!-- VERIFIED BADGES -->
+        <section class="side-card">
+          <div class="side-head">
+            <h3>Insignias</h3>
+            <span>{{ stats().badgesUnlocked }}/{{ progress.badges().length }}</span>
           </div>
 
-          <small>{{ progress.stats().xp }} / {{ progress.stats().levelMaxXp }} XP para el siguiente nivel</small>
+          <div class="badges-compact">
+            @for (badge of progress.badges(); track badge.id) {
+              <div class="badge-chip" [class.unlocked]="badge.unlocked" [title]="badge.unlocked ? badge.description : badge.requirementText">
+                <div class="badge-ico">
+                  <span class="material-symbols-rounded sm">{{ badge.unlocked ? badge.icon : 'lock' }}</span>
+                </div>
+                <div class="badge-text">
+                  <strong>{{ badge.title }}</strong>
+                  <small>{{ badge.unlocked ? 'Lograda' : badge.requirementText }}</small>
+                </div>
+              </div>
+            }
+          </div>
         </section>
 
-        <!-- DAILY / RECOMMENDED -->
-        <section class="side-card daily-card">
-          <span class="profile-label">RECOMENDADO PARA TI</span>
-          <div class="daily-icon">{{ progress.nextRecommendedModule().icon }}</div>
-          <h3>{{ progress.nextRecommendedModule().name }}</h3>
-          <p>{{ progress.nextRecommendedModule().subtitle }}</p>
-          <a [routerLink]="progress.nextRecommendedModule().route">
-            Comenzar desafío →
-          </a>
-        </section>
+        <!-- RECENT ACTIVITY & RESET -->
+        <section class="side-card">
+          <div class="side-head">
+            <h3>Actividad reciente</h3>
+            @if (stats().streakDays > 0) {
+              <span class="streak-tag">
+                <span class="material-symbols-rounded xs">local_fire_department</span>
+                {{ stats().streakDays }}d
+              </span>
+            }
+          </div>
 
-        <!-- SECURITY -->
-        <section class="side-card security-card">
-          <div class="security-header">
-            <span class="profile-label">TU CUENTA</span>
-            <span class="security-ok">
-              {{ auth.isFirebaseMode() ? 'FIREBASE' : 'SESIÓN ACTIVA' }}
+          @if (recentActivities().length > 0) {
+            <div class="act-compact-list">
+              @for (act of recentActivities(); track act.id) {
+                <div class="act-compact-row">
+                  <span class="material-symbols-rounded sm act-ico" [class.warn]="act.tone === 'warning'">
+                    {{ act.icon }}
+                  </span>
+                  <div class="act-copy">
+                    <strong>{{ act.title }}</strong>
+                    <small>{{ act.detail }}</small>
+                  </div>
+                  <b>{{ act.xpText }}</b>
+                </div>
+              }
+            </div>
+
+            @if (progress.activities().length > 4) {
+              <button type="button" class="toggle-act-btn" (click)="showAllActivity.set(!showAllActivity())">
+                {{ showAllActivity() ? 'Ver menos' : 'Ver todo (' + progress.activities().length + ')' }}
+              </button>
+            }
+          } @else {
+            <p class="empty-note">
+              Cuando completes o practiques un simulador, tu historial real aparecerá aquí.
+            </p>
+          }
+
+          <div class="account-footer">
+            <span class="provider-pill">
+              <span class="material-symbols-rounded xs">cloud_done</span>
+              {{ auth.currentUser()?.provider === 'google' ? 'Google' : 'Correo' }}
             </span>
-          </div>
 
-          <div class="security-item">
-            <span>Usuario</span>
-            <strong>{{ auth.currentUser()?.displayName }}</strong>
-          </div>
-
-          <div class="security-item">
-            <span>Método de acceso</span>
-            <strong>
-              {{
-                auth.currentUser()?.provider === 'google'
-                  ? 'Google'
-                  : auth.currentUser()?.provider === 'password'
-                    ? 'Firebase Email'
-                    : 'Correo (Local)'
-              }}
-            </strong>
-          </div>
-
-          <div class="security-item">
-            <span>Módulos superados</span>
-            <strong>{{ progress.stats().modulesCompleted }} / {{ progress.stats().totalModules }}</strong>
-          </div>
-
-          <div class="reset-zone">
             @if (!confirmReset()) {
-              <button type="button" class="reset-link" (click)="confirmReset.set(true)">
-                Reiniciar mi progreso
+              <button type="button" class="reset-btn" (click)="confirmReset.set(true)">
+                Reiniciar progreso
               </button>
             } @else {
-              <div class="reset-confirm">
-                <small>¿Reiniciar XP y módulos?</small>
-                <div>
-                  <button type="button" class="confirm-yes" (click)="resetAllProgress()">Sí</button>
-                  <button type="button" class="confirm-no" (click)="confirmReset.set(false)">No</button>
-                </div>
+              <div class="reset-confirm-inline">
+                <span>¿Borrar XP?</span>
+                <button type="button" class="confirm-yes" (click)="resetAllProgress()">Sí</button>
+                <button type="button" class="confirm-no" (click)="confirmReset.set(false)">No</button>
               </div>
             }
           </div>
@@ -367,6 +429,85 @@
     </div>
   </main>
 </section>
+
+<!-- MODAL DE CERTIFICADO / RECONOCIMIENTO OFICIAL -->
+@if (showCertificateModal()) {
+  <div class="cert-modal-overlay" (click)="showCertificateModal.set(false)">
+    <div class="cert-card-dialog" (click)="$event.stopPropagation()">
+      <div class="cert-border-outer">
+        <div class="cert-border-inner">
+          <div class="cert-watermark">UCC</div>
+
+          <div class="cert-header">
+            <div class="cert-logo-row">
+              <span class="cert-brand-mark">C</span>
+              <div>
+                <strong>CLICKABLE · EDUCACIÓN DIGITAL</strong>
+                <small>Universidad Cooperativa de Colombia · Electiva de Seguridad</small>
+              </div>
+            </div>
+            <div class="cert-seal">
+              <span class="material-symbols-rounded xl">verified</span>
+            </div>
+          </div>
+
+          <div class="cert-body">
+            <span class="cert-super-title">CERTIFICADO DE RECONOCIMIENTO</span>
+            <h2>Insignia Oficial de Ciberseguridad</h2>
+            <p class="cert-intro">Se certifica formalmente que el estudiante:</p>
+
+            <h1 class="student-cert-name">
+              {{ auth.currentUser()?.displayName || (auth.currentUser()?.firstName + ' ' + auth.currentUser()?.lastName) || 'Estudiante Destacado' }}
+            </h1>
+
+            <p class="cert-reason">
+              Ha completado satisfactoriamente los módulos de entrenamiento interactivo del simulador <b>Clickable</b>, demostrando capacidad analítica en la detección y mitigación de amenazas digitales como phishing, malware, ingeniería social, redes clonadas y ataques avanzados con IA, obteniendo una calificación de excelencia ({{ stats().averageAccuracy }}% de precisión).
+            </p>
+
+            <div class="cert-metrics-row">
+              <div>
+                <strong>{{ stats().modulesCompleted }} de {{ stats().totalModules }}</strong>
+                <small>Módulos Dominados</small>
+              </div>
+              <div>
+                <strong>{{ stats().totalThreatsDetected }}</strong>
+                <small>Amenazas Neutralizadas</small>
+              </div>
+              <div>
+                <strong>{{ stats().xp }} XP</strong>
+                <small>Puntos de Experiencia</small>
+              </div>
+            </div>
+
+            <div class="cert-footer">
+              <div class="cert-signature">
+                <span class="sig-line"></span>
+                <strong>Prof. Ivonne Barco</strong>
+                <small>Docente de Seguridad Informática · UCC</small>
+              </div>
+
+              <div class="cert-date">
+                <span>Fecha de emisión:</span>
+                <strong>{{ todayFormatted }}</strong>
+                <small>ID: UCC-SEC-{{ auth.currentUser()?.uid?.slice(0, 8) || '2026' }}</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cert-dialog-actions no-print">
+        <button type="button" class="btn secondary" (click)="showCertificateModal.set(false)">
+          Cerrar
+        </button>
+        <button type="button" class="btn primary glow" (click)="printCertificate()">
+          <span class="material-symbols-rounded sm">print</span>
+          Imprimir / Guardar en PDF
+        </button>
+      </div>
+    </div>
+  </div>
+}
 
 <app-help-glossary
   [open]="glossaryOpen()"

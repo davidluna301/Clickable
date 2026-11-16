@@ -11,7 +11,7 @@ describe('ProgressService', () => {
     });
   });
 
-  it('tracks module completion, XP, and badges per authenticated user', async () => {
+  it('starts new user at 0 XP, unlocks Module 1 only, persists checkpoints, and unlocks next module cleanly', async () => {
     const auth = TestBed.inject(AuthService);
     await auth.waitForAuthInit();
 
@@ -27,12 +27,36 @@ describe('ProgressService', () => {
 
     expect(progress.stats().modulesCompleted).toBe(0);
     expect(progress.overallPercentage()).toBe(0);
+    expect(progress.stats().xp).toBe(0);
+    expect(progress.stats().hasPlayedAny).toBe(false);
+    expect(progress.isModuleUnlocked('phishing')).toBe(true);
+    expect(progress.isModuleUnlocked('navegacion')).toBe(false);
 
-    progress.recordModuleCompletion('phishing', 50, 3);
+    progress.saveModuleCheckpoint('phishing', {
+      scenarioIndex: 1,
+      xp: 30,
+      lives: 3,
+      found: ['from'],
+      wrong: [],
+      closed: false,
+      threatsDetected: 3,
+      mistakesCount: 0,
+      updatedAt: new Date().toISOString(),
+    });
+
+    expect(progress.getModuleCheckpoint('phishing')?.scenarioIndex).toBe(1);
+    expect(progress.stats().xp).toBe(30);
+    expect(progress.stats().hasPlayedAny).toBe(true);
+
+    progress.recordModuleCompletion('phishing', 50, 3, 4);
 
     expect(progress.stats().modulesCompleted).toBe(1);
-    expect(progress.overallPercentage()).toBe(25);
-    expect(progress.stats().xp).toBe(70); // 20 base + 50 earned
-    expect(progress.stats().badgesUnlocked).toBe(2); // Primer clic + Clic seguro
+    expect(progress.overallPercentage()).toBe(13);
+    expect(progress.stats().xp).toBe(50);
+    expect(progress.stats().totalThreatsDetected).toBe(4);
+    expect(progress.stats().badgesUnlocked).toBe(4); // Primer análisis + Ojo anti-phishing + Criterio impecable + Insignia Ciberseguridad (score 100% >= 80%)
+    expect(progress.isModuleUnlocked('navegacion')).toBe(true);
+    expect(progress.isModuleUnlocked('celular')).toBe(false);
+    expect(progress.getModuleCheckpoint('phishing')).toBeNull();
   });
 });
