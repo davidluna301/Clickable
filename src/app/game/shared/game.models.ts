@@ -1,6 +1,14 @@
 import { GlossaryCategory } from '../../shared/glossary.data';
 
-export type Frame = 'email' | 'browser' | 'sms' | 'payment';
+export type Frame =
+  | 'email'
+  | 'browser'
+  | 'sms'
+  | 'payment'
+  | 'social'
+  | 'wifi-prompt'
+  | 'ai-assistant'
+  | 'workspace';
 
 export type PartKind =
   | 'sender'

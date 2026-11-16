@@ -1,0 +1,109 @@
+<div class="briefing-shell">
+  <header class="briefing-topbar">
+    <a routerLink="/profile" class="back-pill">
+      <span class="material-symbols-rounded sm">arrow_back</span>
+      <span>Mi perfil</span>
+    </a>
+
+    <div class="top-right-tools">
+      <button type="button" class="glossary-trigger" (click)="openGlossary.emit()">
+        <span class="material-symbols-rounded sm">menu_book</span>
+        <span>Glosario</span>
+      </button>
+      <div class="brand-tag">Clickable<span>.</span></div>
+    </div>
+  </header>
+
+  <section class="briefing-card">
+    <!-- LEFT OBSIDIAN MISSION PANEL -->
+    <div class="briefing-dark">
+      <div class="radar-rings" aria-hidden="true"></div>
+
+      <div class="dark-top">
+        <span class="mission-code">{{ orderLabel() }} · {{ categoryLabel() }}</span>
+
+        <div class="emblem-row">
+          <div class="emblem-box">
+            <span class="material-symbols-rounded xl">{{ module().icon }}</span>
+          </div>
+          <div class="rules-micro">
+            <span><span class="material-symbols-rounded xs heart">favorite</span> 3 vidas</span>
+            <span><span class="material-symbols-rounded xs mint">layers</span> {{ module().scenarios.length }} casos reales</span>
+          </div>
+        </div>
+
+        <h1>{{ module().title }}</h1>
+        <p class="dark-desc">{{ module().description }}</p>
+      </div>
+
+      <!-- ESCENARIOS QUE ENFRENTARÁS -->
+      <div class="missions-preview">
+        <span class="preview-kicker">ESCENARIOS DEL SIMULADOR</span>
+        <div class="preview-pills">
+          @for (sc of module().scenarios; track sc.id; let idx = $index) {
+            <div class="preview-item">
+              <span class="item-num">0{{ idx + 1 }}</span>
+              <span class="material-symbols-rounded xs item-ico">{{ frameIcon(sc.frame) }}</span>
+              <span class="item-title">{{ sc.title }}</span>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT EDITORIAL TACTICS PANEL -->
+    <div class="briefing-light">
+      @if (checkpoint(); as cp) {
+        <div class="resume-strip">
+          <span class="material-symbols-rounded sm">bookmark</span>
+          <div>
+            <strong>Simulación en pausa · Escenario {{ cp.scenarioIndex + 1 }} de {{ module().scenarios.length }}</strong>
+            <small>{{ cp.xp }} XP acumulados · {{ cp.lives }}/3 vidas restantes</small>
+          </div>
+        </div>
+      }
+
+      <div class="tactics-head">
+        <span class="eyebrow">ENTRENAMIENTO PRÁCTICO</span>
+        <h2>Qué observar dentro del simulador</h2>
+      </div>
+
+      <div class="tactics-steps">
+        @for (tip of module().tips; track tip; let idx = $index) {
+          <article class="tactic-row">
+            <span class="tactic-num">0{{ idx + 1 }}</span>
+            <p>{{ tip }}</p>
+          </article>
+        }
+      </div>
+
+      <div class="scoring-note">
+        <span class="material-symbols-rounded sm">info</span>
+        <span>
+          Toca solo los elementos sospechosos. Acusar algo seguro o confirmar sin detectar una trampa cuesta <b>1 vida</b>.
+        </span>
+      </div>
+
+      <div class="briefing-actions">
+        <button type="button" class="start-mint-btn" (click)="start.emit()">
+          <span class="material-symbols-rounded sm">play_arrow</span>
+          <span>{{ hasCheckpoint() ? 'Reanudar simulación' : 'Abrir simulador' }}</span>
+        </button>
+
+        <div class="secondary-actions">
+          @if (hasCheckpoint()) {
+            <button type="button" class="ghost-btn" (click)="startFresh.emit()">
+              <span class="material-symbols-rounded sm">replay</span>
+              <span>Reiniciar desde 01</span>
+            </button>
+          }
+
+          <button type="button" class="ghost-btn" (click)="openGlossary.emit()">
+            <span class="material-symbols-rounded sm">menu_book</span>
+            <span>{{ glossaryLabel() }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

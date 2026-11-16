@@ -1,228 +1,917 @@
-<div class="game-board-container">
-  <!-- TOP HUD BAR -->
-  <header class="bar">
-    <div class="bar-left">
-      <a routerLink="/profile" class="exit-btn">← Perfil</a>
-      <div class="title-stack">
-        <h2>{{ module().icon }} {{ module().title }}</h2>
-        <small>Escenario {{ index() + 1 }} de {{ module().scenarios.length }}</small>
+<div class="sim-shell">
+  <!-- TOP SIMULATOR HUD -->
+  <header class="hud-bar">
+    <div class="hud-left">
+      <a routerLink="/profile" class="back-pill">
+        <span class="material-symbols-rounded sm">arrow_back</span>
+        <span>Mi perfil</span>
+      </a>
+
+      <div class="hud-title">
+        <div class="hud-mod-ico">
+          <span class="material-symbols-rounded sm">{{ module().icon }}</span>
+        </div>
+        <div>
+          <h2>{{ module().title }}</h2>
+          <small>Escenario {{ index() + 1 }} de {{ module().scenarios.length }} · {{ scenario().title }}</small>
+        </div>
       </div>
     </div>
 
-    <div class="bar-right">
-      <button type="button" class="help-btn" (click)="openHelp()">
-        <span>📚</span>
-        Ayuda y Glosario
+    <div class="hud-right">
+      <button type="button" class="glossary-pill" (click)="openHelp()">
+        <span class="material-symbols-rounded sm">menu_book</span>
+        <span>Glosario</span>
       </button>
 
-      <div class="stats">
-        <span class="hearts" title="Vidas restantes">
+      <div class="hud-stats">
+        <div class="hearts-pill" title="Vidas restantes">
           @for (h of hearts(); track $index) {
-            <span>{{ h ? '❤️' : '🤍' }}</span>
+            <span class="material-symbols-rounded sm heart-ico" [class.alive]="h" [class.lost]="!h">
+              favorite
+            </span>
           }
-        </span>
-        <span class="xp">⚡ {{ xp() }} XP</span>
+        </div>
+
+        <div class="xp-pill">
+          <span class="material-symbols-rounded xs">bolt</span>
+          <span>{{ xp() }} XP</span>
+        </div>
       </div>
     </div>
   </header>
 
-  <div class="progress" title="Progreso del módulo">
-    <div [style.width.%]="progress()"></div>
+  <div class="hud-progress" title="Avance del módulo">
+    <span [style.width.%]="progress()"></span>
   </div>
 
   @if (status() === 'playing') {
-    <!-- DESKTOP MODE BAR -->
-    <div class="workspace-toolbar">
-      <div class="hint-banner">
-        <span class="hint-icon">🔍</span>
-        <span>
-          <strong>Tu misión:</strong> Toca únicamente los elementos que contengan una señal sospechosa.
-          @if (totalThreatsInScenario() > 0 && missing().length === 0) {
-            <span class="all-found-chip">✓ ¡Ya encontraste todas las amenazas! Confirma abajo.</span>
-          }
-        </span>
+    <!-- PROMINENT MAIN LENS INSTRUCTION PANEL -->
+    <div class="lens-bar">
+      <div class="lens-icon-badge" aria-hidden="true">
+        <span class="material-symbols-rounded lg">troubleshoot</span>
       </div>
 
-      <div class="view-switcher" role="group" aria-label="Cambiar vista del escenario">
-        <button
-          type="button"
-          [class.active]="desktopViewMode() === 'cards'"
-          (click)="desktopViewMode.set('cards')"
-        >
-          🖥️ Tarjetas
-        </button>
-        <button
-          type="button"
-          [class.active]="desktopViewMode() === 'simulator'"
-          (click)="desktopViewMode.set('simulator')"
-        >
-          📱 Simulador
-        </button>
+      <div class="lens-copy">
+        <div class="lens-title-row">
+          <span class="lens-pill-tag">LUPA ACTIVA</span>
+          <strong>Inspecciona el escenario y haz clic en lo sospechoso</strong>
+        </div>
+        <p class="lens-text">
+          Pasa el cursor por cada parte del mensaje o pantalla y toca únicamente las <b>señales de engaño o malware</b>. Cuando las detectes todas, avanzarás automáticamente. Si acusas algo seguro, pierdes 1 vida.
+        </p>
       </div>
+
+      @if (totalThreatsInScenario() > 0 && missing().length === 0) {
+        <span class="all-caught-pill">
+          <span class="material-symbols-rounded sm">emoji_events</span>
+          ¡Todas las señales detectadas!
+        </span>
+      }
     </div>
 
-    <div class="mixed-layout" [class.simulator-forced]="desktopViewMode() === 'simulator'">
-      <!-- =====================================================
-           DESKTOP INTERACTIVE CARDS VIEW
-      ====================================================== -->
-      <div class="desktop-cards-panel">
-        <section [class]="'frame desktop-frame ' + scenario().frame">
-          <div class="window-chrome">
-            <div class="chrome-dots">
-              <span></span><span></span><span></span>
-            </div>
-            <div class="chrome-context">
-              <strong>{{ scenario().appHeader || scenario().title }}</strong>
-              @if (scenario().addressBar) {
-                <span class="chrome-address">{{ scenario().addressBar }}</span>
-              }
-            </div>
-            <span class="chrome-tag">{{ scenario().contextLabel || scenario().title }}</span>
-          </div>
+    <div class="simulator-workspace">
+      <!-- LEFT / MAIN REALISTIC SIMULATOR STAGE -->
+      <div class="simulator-stage">
+        @if (scenario().frame === 'email') {
+          <!-- ================= AUTHENTIC WEBMAIL CLIENT (GMAIL STYLE) ================= -->
+          <section class="webmail-shell" aria-label="Simulador de cliente de correo electrónico">
+            <!-- Webmail Top Chrome -->
+            <div class="webmail-chrome">
+              <div class="mac-dots">
+                <span></span><span></span><span></span>
+              </div>
 
-          <div class="cards-stack">
-            @for (p of scenario().parts; track p.id) {
-              <button
-                type="button"
-                [class]="'inspect-card ' + p.kind + ' ' + state(p)"
-                (click)="pick(p)"
-              >
-                <div class="card-meta">
-                  <span class="kind-badge">{{ kindLabel(p.kind) }}</span>
-                  @if (state(p) === 'found') {
-                    <span class="state-chip found">✓ Amenaza detectada (+10 XP)</span>
-                  } @else if (state(p) === 'wrong') {
-                    <span class="state-chip wrong">✗ Elemento seguro (-1 vida)</span>
-                  } @else if (state(p) === 'missed') {
-                    <span class="state-chip missed">⚠️ Amenaza no detectada</span>
-                  } @else {
-                    <span class="state-chip idle">Analizar elemento →</span>
+              <div class="webmail-brand">
+                <span class="material-symbols-rounded sm mail-logo-ico">mail</span>
+                <strong>Mail</strong>
+              </div>
+
+              <div class="webmail-search" aria-hidden="true">
+                <span class="material-symbols-rounded xs">search</span>
+                <span>Buscar en el correo...</span>
+              </div>
+
+              <div class="webmail-user-dot" aria-hidden="true">V</div>
+            </div>
+
+            <div class="webmail-layout">
+              <!-- Decorative Gmail-like Folder Rail -->
+              <aside class="mail-sidebar" aria-hidden="true">
+                <div class="mail-compose-btn">
+                  <span class="material-symbols-rounded xs">edit</span>
+                  <span>Redactar</span>
+                </div>
+                <div class="mail-folder active">
+                  <span class="material-symbols-rounded xs">inbox</span>
+                  <span>Recibidos</span>
+                  <b>1</b>
+                </div>
+                <div class="mail-folder">
+                  <span class="material-symbols-rounded xs">star_outline</span>
+                  <span>Destacados</span>
+                </div>
+                <div class="mail-folder">
+                  <span class="material-symbols-rounded xs">send</span>
+                  <span>Enviados</span>
+                </div>
+                <div class="mail-folder">
+                  <span class="material-symbols-rounded xs">report_gmailerrorred</span>
+                  <span>Spam</span>
+                </div>
+              </aside>
+
+              <!-- Main Reading Pane -->
+              <div class="mail-reader">
+                <!-- Reading Actions Toolbar -->
+                <div class="mail-action-row" aria-hidden="true">
+                  <div class="mail-icons-group">
+                    <span class="material-symbols-rounded sm">arrow_back</span>
+                    <span class="material-symbols-rounded sm">archive</span>
+                    <span class="material-symbols-rounded sm">report</span>
+                    <span class="material-symbols-rounded sm">delete</span>
+                    <span class="material-symbols-rounded sm">mark_email_unread</span>
+                  </div>
+                  <span class="mail-date-meta">{{ emailBrand().time }}</span>
+                </div>
+
+                <!-- Interactive Subject Row -->
+                @for (p of subjectParts(); track p.id) {
+                  <button
+                    type="button"
+                    [class]="'sim-hit mail-subject-row ' + state(p)"
+                    (click)="pick(p)"
+                  >
+                    <div class="subject-left">
+                      <h3 class="real-subject">{{ p.text }}</h3>
+                      <span class="inbox-chip" aria-hidden="true">{{ emailBrand().folder }}</span>
+                    </div>
+
+                    @if (state(p) === 'found') {
+                      <span class="eval-badge found"><span class="material-symbols-rounded xs">check_circle</span> Riesgo +10 XP</span>
+                    } @else if (state(p) === 'wrong') {
+                      <span class="eval-badge wrong"><span class="material-symbols-rounded xs">cancel</span> Seguro (-1 vida)</span>
+                    } @else if (state(p) === 'missed') {
+                      <span class="eval-badge missed"><span class="material-symbols-rounded xs">warning</span> Se escapó</span>
+                    } @else {
+                      <span class="hover-lens"><span class="material-symbols-rounded xs">troubleshoot</span> Evaluar</span>
+                    }
+                  </button>
+                }
+
+                <!-- Interactive Sender Profile Row -->
+                @for (p of senderParts(); track p.id) {
+                  <button
+                    type="button"
+                    [class]="'sim-hit mail-sender-row ' + state(p)"
+                    (click)="pick(p)"
+                  >
+                    <div
+                      class="sender-brand-avatar"
+                      [style.background]="emailBrand().avatarBg"
+                      [style.color]="emailBrand().avatarColor"
+                    >
+                      {{ emailBrand().avatarText }}
+                    </div>
+
+                    <div class="sender-identity">
+                      <div class="sender-top-line">
+                        <strong>{{ emailBrand().senderName }}</strong>
+                        <span class="sender-addr mono-text">&lt;{{ p.text }}&gt;</span>
+                      </div>
+                      <div class="sender-sub-line">
+                        <span>para mí</span>
+                        <span class="material-symbols-rounded xs">arrow_drop_down</span>
+                      </div>
+                    </div>
+
+                    <div class="sender-right-meta">
+                      @if (state(p) === 'found') {
+                        <span class="eval-badge found"><span class="material-symbols-rounded xs">check_circle</span> Riesgo +10 XP</span>
+                      } @else if (state(p) === 'wrong') {
+                        <span class="eval-badge wrong"><span class="material-symbols-rounded xs">cancel</span> Seguro (-1 vida)</span>
+                      } @else if (state(p) === 'missed') {
+                        <span class="eval-badge missed"><span class="material-symbols-rounded xs">warning</span> Se escapó</span>
+                      } @else {
+                        <span class="mail-time-desktop">{{ emailBrand().time }}</span>
+                        <span class="hover-lens"><span class="material-symbols-rounded xs">troubleshoot</span> Evaluar</span>
+                      }
+                    </div>
+                  </button>
+                }
+
+                <!-- HTML Email Letter Body -->
+                <div class="mail-letter-wrap">
+                  <div class="mail-letter-paper" [attr.data-tone]="emailBrand().tone">
+                    <!-- Realistic Corporate / Institutional Email Header -->
+                    <div class="letter-masthead" aria-hidden="true">
+                      <span class="material-symbols-rounded sm">
+                        {{
+                          emailBrand().tone === 'bank'
+                            ? 'account_balance'
+                            : emailBrand().tone === 'uni'
+                              ? 'school'
+                              : emailBrand().tone === 'promo'
+                                ? 'loyalty'
+                                : 'mail'
+                        }}
+                      </span>
+                      <div>
+                        <strong>{{ emailBrand().headerTitle }}</strong>
+                        <small>{{ emailBrand().headerSub }}</small>
+                      </div>
+                    </div>
+
+                    <div class="letter-content">
+                      @for (p of bodyParts(); track p.id) {
+                        @if (p.kind === 'file') {
+                          <button
+                            type="button"
+                            [class]="'sim-hit gmail-attachment-card ' + state(p)"
+                            (click)="pick(p)"
+                          >
+                            <div class="attach-preview" aria-hidden="true">
+                              <div class="doc-lines">
+                                <span></span><span></span><span></span>
+                              </div>
+                              <span class="ext-pill">{{ attachmentBadge(p.text) }}</span>
+                            </div>
+                            <div class="attach-footer">
+                              <span class="material-symbols-rounded sm attach-doc-ico">description</span>
+                              <div class="attach-meta">
+                                <strong class="mono-text">{{ p.text }}</strong>
+                                <small>2.4 MB · Archivo adjunto</small>
+                              </div>
+                              @if (state(p) === 'found') {
+                                <span class="eval-badge found">+10 XP</span>
+                              } @else if (state(p) === 'wrong') {
+                                <span class="eval-badge wrong">-1 vida</span>
+                              } @else if (state(p) === 'missed') {
+                                <span class="eval-badge missed">Se escapó</span>
+                              } @else {
+                                <span class="hover-lens"><span class="material-symbols-rounded xs">troubleshoot</span></span>
+                              }
+                            </div>
+                          </button>
+                        } @else if (p.kind === 'button' || p.kind === 'link') {
+                          @let cta = splitButtonArrow(p.text);
+                          <button
+                            type="button"
+                            [class]="'sim-hit real-email-cta-wrap ' + state(p)"
+                            (click)="pick(p)"
+                          >
+                            <span class="real-cta-btn" [attr.data-tone]="emailBrand().tone">
+                              <span>{{ cta.label }}</span>
+                              <span class="material-symbols-rounded xs">arrow_forward</span>
+                            </span>
+
+                            @if (cta.target) {
+                              <span class="link-destination-chip mono-text">
+                                <span class="material-symbols-rounded xs">link</span>
+                                {{ cta.target }}
+                              </span>
+                            }
+
+                            @if (state(p) === 'found') {
+                              <span class="eval-badge found"><span class="material-symbols-rounded xs">check_circle</span> Riesgo +10 XP</span>
+                            } @else if (state(p) === 'wrong') {
+                              <span class="eval-badge wrong"><span class="material-symbols-rounded xs">cancel</span> Seguro (-1 vida)</span>
+                            } @else if (state(p) === 'missed') {
+                              <span class="eval-badge missed"><span class="material-symbols-rounded xs">warning</span> Se escapó</span>
+                            } @else {
+                              <span class="hover-lens"><span class="material-symbols-rounded xs">troubleshoot</span> Evaluar</span>
+                            }
+                          </button>
+                        } @else {
+                          <button
+                            type="button"
+                            [class]="'sim-hit seamless-para ' + state(p)"
+                            (click)="pick(p)"
+                          >
+                            <span class="para-text">{{ p.text }}</span>
+                            @if (state(p) === 'found') {
+                              <span class="eval-badge found"><span class="material-symbols-rounded xs">check_circle</span> Riesgo +10 XP</span>
+                            } @else if (state(p) === 'wrong') {
+                              <span class="eval-badge wrong"><span class="material-symbols-rounded xs">cancel</span> Seguro (-1 vida)</span>
+                            } @else if (state(p) === 'missed') {
+                              <span class="eval-badge missed"><span class="material-symbols-rounded xs">warning</span> Se escapó</span>
+                            } @else {
+                              <span class="hover-lens"><span class="material-symbols-rounded xs">troubleshoot</span> Evaluar</span>
+                            }
+                          </button>
+                        }
+                      }
+                    </div>
+
+                    <div class="letter-footer" aria-hidden="true">
+                      {{ emailBrand().footerText }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        } @else if (scenario().frame === 'browser') {
+          <!-- ================= AUTHENTIC CHROME WEB BROWSER ================= -->
+          <section class="chrome-shell" aria-label="Simulador de navegador web">
+            <!-- Top Tab Strip -->
+            <div class="chrome-tabs-bar">
+              <div class="mac-dots">
+                <span></span><span></span><span></span>
+              </div>
+
+              <div class="chrome-tab active">
+                <span class="material-symbols-rounded xs tab-favicon">public</span>
+                <span class="tab-label">{{ scenario().title }}</span>
+                <span class="tab-close" aria-hidden="true">×</span>
+              </div>
+
+              <div class="chrome-newtab" aria-hidden="true">+</div>
+            </div>
+
+            <!-- Address Bar Row -->
+            <div class="chrome-toolbar">
+              <div class="browser-nav-icons" aria-hidden="true">
+                <span class="material-symbols-rounded sm">arrow_back</span>
+                <span class="material-symbols-rounded sm">arrow_forward</span>
+                <span class="material-symbols-rounded sm">refresh</span>
+              </div>
+
+              <div class="chrome-omnibox">
+                @if (urlParts().length > 0) {
+                  @for (u of urlParts(); track u.id) {
+                    <button
+                      type="button"
+                      [class]="'sim-hit omni-part ' + state(u)"
+                      (click)="pick(u)"
+                      title="Inspeccionar URL"
+                    >
+                      @if (u.text.includes('https')) {
+                        <span class="material-symbols-rounded xs omni-lock-safe">lock</span>
+                      } @else if (u.text.includes('http://')) {
+                        <span class="material-symbols-rounded xs omni-lock-warn">lock_open</span>
+                      }
+                      <span class="mono-text">{{ u.text }}</span>
+                      @if (state(u) === 'found') {
+                        <span class="eval-badge found">+10 XP</span>
+                      } @else if (state(u) === 'wrong') {
+                        <span class="eval-badge wrong">-1 vida</span>
+                      } @else if (state(u) === 'missed') {
+                        <span class="eval-badge missed">Omitido</span>
+                      }
+                    </button>
+                  }
+                } @else {
+                  <span class="omni-static">
+                    <span class="material-symbols-rounded xs omni-lock-safe">lock</span>
+                    <span class="mono-text">{{ scenario().addressBar }}</span>
+                  </span>
+                }
+              </div>
+
+              <div class="chrome-tools-icons" aria-hidden="true">
+                <span class="material-symbols-rounded sm">star_outline</span>
+                <span class="material-symbols-rounded sm">more_vert</span>
+              </div>
+            </div>
+
+            <!-- Simulated Live Website Content -->
+            <div class="browser-viewport" [attr.data-scene]="scenario().id">
+              <!-- Fake Site Top Navbar (Contextual Atmosphere) -->
+              <div class="site-navbar" aria-hidden="true">
+                <div class="site-brand-chip">
+                  <span class="material-symbols-rounded sm">
+                    {{
+                      scenario().id === 'banco-falso'
+                        ? 'account_balance'
+                        : scenario().id === 'descarga-enganosa'
+                          ? 'play_circle'
+                          : scenario().id === 'extension'
+                            ? 'extension'
+                            : 'school'
+                    }}
+                  </span>
+                  <strong>
+                    {{
+                      scenario().id === 'banco-falso'
+                        ? 'Banco Andino'
+                        : scenario().id === 'descarga-enganosa'
+                          ? 'ConvertMP4 Gratis'
+                          : scenario().id === 'extension'
+                            ? 'Web Store'
+                            : 'UCC · Campus Virtual'
+                    }}
+                  </strong>
+                </div>
+
+                <div class="site-nav-links">
+                  <span>Inicio</span>
+                  <span>Servicios</span>
+                  <span>Ayuda</span>
+                </div>
+              </div>
+
+              <div class="webpage-stage">
+                <div class="webpage-card">
+                  @for (p of bodyParts(); track p.id) {
+                    @if (p.kind === 'permission') {
+                      <button
+                        type="button"
+                        [class]="'sim-hit store-perm-row ' + state(p)"
+                        (click)="pick(p)"
+                      >
+                        <div class="perm-ico">
+                          <span class="material-symbols-rounded sm">verified_user</span>
+                        </div>
+                        <span class="perm-text">{{ p.text }}</span>
+                        @if (state(p) === 'found') {
+                          <span class="eval-badge found">+10 XP</span>
+                        } @else if (state(p) === 'wrong') {
+                          <span class="eval-badge wrong">-1 vida</span>
+                        } @else if (state(p) === 'missed') {
+                          <span class="eval-badge missed">Se escapó</span>
+                        } @else {
+                          <span class="hover-lens"><span class="material-symbols-rounded xs">troubleshoot</span> Evaluar</span>
+                        }
+                      </button>
+                    } @else if (p.kind === 'file') {
+                      <button
+                        type="button"
+                        [class]="'sim-hit phone-link-card phone-file-card ' + state(p)"
+                        (click)="pick(p)"
+                      >
+                        <span class="material-symbols-rounded sm">
+                          {{ p.text.includes('Nota de voz') || p.text.includes('audio') || p.text.includes('Audio') ? 'graphic_eq' : 'attach_file' }}
+                        </span>
+                        <span class="mono-text">{{ p.text }}</span>
+                        @if (state(p) === 'found') {
+                          <span class="eval-badge found">+10 XP</span>
+                        } @else if (state(p) === 'wrong') {
+                          <span class="eval-badge wrong">-1 vida</span>
+                        } @else if (state(p) === 'missed') {
+                          <span class="eval-badge missed">Omitido</span>
+                        }
+                      </button>
+                    } @else if (p.kind === 'button') {
+                      <button
+                        type="button"
+                        [class]="'sim-hit web-cta-btn ' + (scenario().id === 'descarga-enganosa' ? 'flashy-dl ' : '') + state(p)"
+                        (click)="pick(p)"
+                      >
+                        @if (scenario().id === 'descarga-enganosa') {
+                          <span class="material-symbols-rounded sm">download</span>
+                        } @else if (scenario().id === 'extension') {
+                          <span class="material-symbols-rounded sm">add_circle</span>
+                        } @else {
+                          <span class="material-symbols-rounded sm">login</span>
+                        }
+                        <span>{{ p.text }}</span>
+                        @if (state(p) === 'found') {
+                          <span class="eval-badge found">+10 XP</span>
+                        } @else if (state(p) === 'wrong') {
+                          <span class="eval-badge wrong">-1 vida</span>
+                        } @else if (state(p) === 'missed') {
+                          <span class="eval-badge missed">Omitido</span>
+                        }
+                      </button>
+                    } @else {
+                      <button
+                        type="button"
+                        [class]="'sim-hit web-element ' + (p.id === 'title' || p.id === 'name' ? 'as-title ' : '') + (p.id === 'claim' ? 'as-trust-seal ' : '') + state(p)"
+                        (click)="pick(p)"
+                      >
+                        <div class="web-el-inner">
+                          @if (p.id === 'claim') {
+                            <span class="material-symbols-rounded sm seal-check" aria-hidden="true">verified</span>
+                          }
+                          <div class="web-el-stack">
+                            @if (p.id === 'name' && scenario().id === 'extension') {
+                              <div class="ext-stars" aria-hidden="true">
+                                <span class="material-symbols-rounded xs">star</span>
+                                <span class="material-symbols-rounded xs">star</span>
+                                <span class="material-symbols-rounded xs">star</span>
+                                <span class="material-symbols-rounded xs">star</span>
+                                <span class="material-symbols-rounded xs">star_half</span>
+                              </div>
+                            }
+
+                            <span class="web-el-text">{{ p.text }}</span>
+
+                            @if (p.id === 'ask' && scenario().id === 'banco-falso') {
+                              <div class="fake-bank-inputs" aria-hidden="true">
+                                <div class="bank-field"><small>Clave de cajero</small><span>••••</span></div>
+                                <div class="bank-field"><small>Clave dinámica</small><span>••••••</span></div>
+                              </div>
+                            }
+                            @if (p.id === 'ask' && (scenario().id === 'sitio-legitimo' || scenario().id === 'clon-universidad')) {
+                              <div class="uni-login-preview" aria-hidden="true">
+                                <span class="material-symbols-rounded xs">alternate_email</span>
+                                <span>usuario&#64;campusucc.edu.co</span>
+                              </div>
+                            }
+                          </div>
+                        </div>
+
+                        @if (state(p) === 'found') {
+                          <span class="eval-badge found"><span class="material-symbols-rounded xs">check_circle</span> Riesgo +10 XP</span>
+                        } @else if (state(p) === 'wrong') {
+                          <span class="eval-badge wrong"><span class="material-symbols-rounded xs">cancel</span> Seguro (-1 vida)</span>
+                        } @else if (state(p) === 'missed') {
+                          <span class="eval-badge missed"><span class="material-symbols-rounded xs">warning</span> Se escapó</span>
+                        } @else {
+                          <span class="hover-lens"><span class="material-symbols-rounded xs">troubleshoot</span> Evaluar</span>
+                        }
+                      </button>
+                    }
                   }
                 </div>
-                <div class="card-content">{{ p.text }}</div>
-              </button>
-            }
-          </div>
-        </section>
-
-        <!-- Desktop side summary -->
-        <aside class="desktop-mission-aside">
-          <div class="aside-card">
-            <span class="aside-kicker">PROGRESO DEL ESCENARIO</span>
-            <h3>{{ scenario().title }}</h3>
-            <div class="aside-metrics">
-              <div>
-                <strong>{{ evaluatedCount() }} / {{ scenario().parts.length }}</strong>
-                <small>Elementos revisados</small>
-              </div>
-              <div>
-                <strong>{{ found().length }}</strong>
-                <small>Señales detectadas</small>
               </div>
             </div>
+          </section>
+        } @else {
+          <!-- ================= AUTHENTIC SMARTPHONE SIMULATOR ================= -->
+          <section class="phone-stage-wrap" aria-label="Simulador de teléfono móvil">
+            <div class="phone-bezel">
+              <div class="phone-status">
+                <span>9:41</span>
+                <div class="phone-island"></div>
+                <div class="status-icons">
+                  <span class="material-symbols-rounded xs">signal_cellular_alt</span>
+                  <span class="material-symbols-rounded xs">wifi</span>
+                  <span class="material-symbols-rounded xs">battery_5_bar</span>
+                </div>
+              </div>
 
-            <div class="aside-tips">
-              <strong>💡 Recuerda:</strong>
-              <ul>
-                @for (t of module().tips; track t) {
-                  <li>{{ t }}</li>
+              <div class="phone-screen" [attr.data-app]="mobileAppTheme()">
+                <!-- App Bar -->
+                <div class="phone-app-top">
+                  <div class="app-top-title">
+                    <span class="material-symbols-rounded sm">
+                      {{
+                        mobileAppTheme() === 'whatsapp'
+                          ? 'chat'
+                          : mobileAppTheme() === 'call'
+                            ? 'phone_in_talk'
+                            : mobileAppTheme() === 'qr'
+                              ? 'qr_code_scanner'
+                              : mobileAppTheme() === 'alerts'
+                                ? 'notifications'
+                                : mobileAppTheme() === 'browser'
+                                  ? 'public'
+                                  : mobileAppTheme() === 'permissions'
+                                    ? 'admin_panel_settings'
+                                    : mobileAppTheme() === 'marketplace'
+                                      ? 'storefront'
+                                      : mobileAppTheme() === 'instagram' || mobileAppTheme() === 'social'
+                                        ? 'share'
+                                        : mobileAppTheme() === 'wifi'
+                                          ? 'wifi'
+                                          : mobileAppTheme() === 'ai'
+                                            ? 'psychology'
+                                            : mobileAppTheme() === 'teams' || mobileAppTheme() === 'authenticator'
+                                              ? 'apartment'
+                                              : 'sms'
+                      }}
+                    </span>
+                    <div>
+                      <strong>{{ scenario().appHeader || scenario().title }}</strong>
+                      @if (scenario().addressBar) {
+                        <small class="mono-text">{{ scenario().addressBar }}</small>
+                      }
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Special Lockscreen Clock for SIM Swapping -->
+                @if (mobileAppTheme() === 'alerts') {
+                  <div class="lockscreen-clock" aria-hidden="true">
+                    <span class="material-symbols-rounded sm">lock</span>
+                    <strong>10:24</strong>
+                    <small>Notificaciones recientes</small>
+                  </div>
                 }
-              </ul>
-            </div>
 
-            <div class="aside-actions">
-              @if (!closed()) {
-                <button type="button" class="primary full-width" (click)="check()">
-                  Confirmar mi análisis <span>✓</span>
-                </button>
-              } @else {
-                <button type="button" class="primary full-width" (click)="next()">
-                  Siguiente escenario <span>→</span>
-                </button>
-              }
+                <!-- Sender / Caller / Contact Header inside Phone -->
+                @for (p of senderParts(); track p.id) {
+                  <button
+                    type="button"
+                    [class]="'sim-hit phone-contact-bar ' + (mobileAppTheme() === 'call' ? 'is-caller ' : '') + state(p)"
+                    (click)="pick(p)"
+                  >
+                    <div class="contact-avatar" [class.call-pulse]="mobileAppTheme() === 'call'">
+                      <span class="material-symbols-rounded sm">
+                        {{ mobileAppTheme() === 'call' ? 'support_agent' : 'person' }}
+                      </span>
+                    </div>
+                    <div class="contact-text">
+                      <strong>{{ p.text }}</strong>
+                      <small>{{ mobileAppTheme() === 'call' ? 'Llamada de audio · 01:12' : 'Tocar para evaluar contacto' }}</small>
+                    </div>
+                    @if (state(p) === 'found') {
+                      <span class="eval-badge found">+10 XP</span>
+                    } @else if (state(p) === 'wrong') {
+                      <span class="eval-badge wrong">-1 vida</span>
+                    } @else if (state(p) === 'missed') {
+                      <span class="eval-badge missed">Omitido</span>
+                    } @else {
+                      <span class="hover-lens"><span class="material-symbols-rounded xs">troubleshoot</span></span>
+                    }
+                  </button>
+                }
 
-              <button type="button" class="secondary-help-btn" (click)="openHelp()">
-                📚 ¿Dudas? Abrir Glosario
-              </button>
+                <!-- Call Controls Decorative Strip -->
+                @if (mobileAppTheme() === 'call') {
+                  <div class="call-keypad-strip" aria-hidden="true">
+                    <span><i class="material-symbols-rounded xs">mic_off</i>Silenciar</span>
+                    <span><i class="material-symbols-rounded xs">dialpad</i>Teclado</span>
+                    <span><i class="material-symbols-rounded xs">volume_up</i>Altavoz</span>
+                  </div>
+                }
+
+                <!-- Interactive Phone Body Elements -->
+                <div class="phone-canvas">
+                  @for (p of bodyParts(); track p.id) {
+                    @if (p.kind === 'qr') {
+                      <button
+                        type="button"
+                        [class]="'sim-hit qr-camera-card ' + state(p)"
+                        (click)="pick(p)"
+                      >
+                        <div class="qr-matrix-box" aria-hidden="true">
+                          <span class="material-symbols-rounded xl qr-glyph">qr_code_2</span>
+                          <span class="peeled-sticker">Sticker encima</span>
+                        </div>
+                        <div class="qr-caption">
+                          <strong>{{ p.text }}</strong>
+                          <small>Escáner de cámara</small>
+                        </div>
+                        @if (state(p) === 'found') {
+                          <span class="eval-badge found">+10 XP</span>
+                        } @else if (state(p) === 'wrong') {
+                          <span class="eval-badge wrong">-1 vida</span>
+                        } @else if (state(p) === 'missed') {
+                          <span class="eval-badge missed">Omitido</span>
+                        }
+                      </button>
+                    } @else if (p.kind === 'app') {
+                      <button
+                        type="button"
+                        [class]="'sim-hit phone-app-card ' + state(p)"
+                        (click)="pick(p)"
+                      >
+                        <div class="app-card-ico">
+                          <span class="material-symbols-rounded md">
+                            {{ mobileAppTheme() === 'permissions' ? 'flashlight_on' : 'forum' }}
+                          </span>
+                        </div>
+                        <div class="app-card-info">
+                          <strong>{{ p.text }}</strong>
+                          <small>{{ mobileAppTheme() === 'permissions' ? 'Solicitando acceso del sistema' : 'Instalador externo' }}</small>
+                        </div>
+                        @if (state(p) === 'found') {
+                          <span class="eval-badge found">+10 XP</span>
+                        } @else if (state(p) === 'wrong') {
+                          <span class="eval-badge wrong">-1 vida</span>
+                        } @else if (state(p) === 'missed') {
+                          <span class="eval-badge missed">Omitido</span>
+                        }
+                      </button>
+                    } @else if (p.kind === 'permission') {
+                      <button
+                        type="button"
+                        [class]="'sim-hit phone-perm-card ' + state(p)"
+                        (click)="pick(p)"
+                      >
+                        <span class="material-symbols-rounded sm perm-bullet">tune</span>
+                        <span class="perm-name">{{ p.text }}</span>
+                        <span class="switch-pill"></span>
+                        @if (state(p) === 'found') {
+                          <span class="eval-badge found">+10 XP</span>
+                        } @else if (state(p) === 'wrong') {
+                          <span class="eval-badge wrong">-1 vida</span>
+                        } @else if (state(p) === 'missed') {
+                          <span class="eval-badge missed">Omitido</span>
+                        }
+                      </button>
+                    } @else if (p.kind === 'link') {
+                      <button
+                        type="button"
+                        [class]="'sim-hit phone-link-card ' + state(p)"
+                        (click)="pick(p)"
+                      >
+                        <span class="material-symbols-rounded sm">link</span>
+                        <span class="mono-text">{{ p.text }}</span>
+                        @if (state(p) === 'found') {
+                          <span class="eval-badge found">+10 XP</span>
+                        } @else if (state(p) === 'wrong') {
+                          <span class="eval-badge wrong">-1 vida</span>
+                        } @else if (state(p) === 'missed') {
+                          <span class="eval-badge missed">Omitido</span>
+                        }
+                      </button>
+                    } @else if (p.kind === 'file') {
+                      <button
+                        type="button"
+                        [class]="'sim-hit phone-link-card phone-file-card ' + state(p)"
+                        (click)="pick(p)"
+                      >
+                        <span class="material-symbols-rounded sm">
+                          {{ p.text.includes('Nota de voz') || p.text.includes('audio') || p.text.includes('Audio') ? 'graphic_eq' : 'attach_file' }}
+                        </span>
+                        <span class="mono-text">{{ p.text }}</span>
+                        @if (state(p) === 'found') {
+                          <span class="eval-badge found">+10 XP</span>
+                        } @else if (state(p) === 'wrong') {
+                          <span class="eval-badge wrong">-1 vida</span>
+                        } @else if (state(p) === 'missed') {
+                          <span class="eval-badge missed">Omitido</span>
+                        }
+                      </button>
+                    } @else if (p.kind === 'button') {
+                      <button
+                        type="button"
+                        [class]="'sim-hit phone-action-btn ' + state(p)"
+                        (click)="pick(p)"
+                      >
+                        <span>{{ p.text }}</span>
+                        @if (state(p) === 'found') {
+                          <span class="eval-badge found">+10 XP</span>
+                        } @else if (state(p) === 'wrong') {
+                          <span class="eval-badge wrong">-1 vida</span>
+                        } @else if (state(p) === 'missed') {
+                          <span class="eval-badge missed">Omitido</span>
+                        }
+                      </button>
+                    } @else if (mobileAppTheme() === 'alerts') {
+                      @let nMeta = notifMeta(p.id);
+                      <button
+                        type="button"
+                        [class]="'sim-hit lockscreen-notif ' + state(p)"
+                        (click)="pick(p)"
+                      >
+                        <div class="notif-top" aria-hidden="true">
+                          <span class="notif-app">
+                            <span class="material-symbols-rounded xs">{{ nMeta.icon }}</span>
+                            {{ nMeta.app }}
+                          </span>
+                          <span class="notif-time">{{ nMeta.time }}</span>
+                        </div>
+                        <span class="notif-body">{{ p.text }}</span>
+                        @if (state(p) === 'found') {
+                          <span class="eval-badge found"><span class="material-symbols-rounded xs">check_circle</span> Riesgo +10 XP</span>
+                        } @else if (state(p) === 'wrong') {
+                          <span class="eval-badge wrong"><span class="material-symbols-rounded xs">cancel</span> Seguro (-1 vida)</span>
+                        } @else if (state(p) === 'missed') {
+                          <span class="eval-badge missed"><span class="material-symbols-rounded xs">warning</span> Se escapó</span>
+                        }
+                      </button>
+                    } @else {
+                      <button
+                        type="button"
+                        [class]="'sim-hit phone-bubble ' + (p.id === 'balance' ? 'official-check ' : '') + (p.id === 'img' ? 'receipt-preview ' : '') + state(p)"
+                        (click)="pick(p)"
+                      >
+                        @if (p.id === 'balance') {
+                          <span class="official-chip" aria-hidden="true">
+                            <span class="material-symbols-rounded xs">verified_user</span>
+                            Tu app oficial
+                          </span>
+                        }
+                        @if (p.id === 'img') {
+                          <span class="receipt-thumb" aria-hidden="true">
+                            <span class="material-symbols-rounded sm">receipt_long</span>
+                            <small>IMG_comprobante.jpg</small>
+                          </span>
+                        }
+                        <span class="bubble-copy">{{ p.text }}</span>
+                        @if (state(p) === 'found') {
+                          <span class="eval-badge found"><span class="material-symbols-rounded xs">check_circle</span> Riesgo +10 XP</span>
+                        } @else if (state(p) === 'wrong') {
+                          <span class="eval-badge wrong"><span class="material-symbols-rounded xs">cancel</span> Seguro (-1 vida)</span>
+                        } @else if (state(p) === 'missed') {
+                          <span class="eval-badge missed"><span class="material-symbols-rounded xs">warning</span> Se escapó</span>
+                        }
+                      </button>
+                    }
+                  }
+                </div>
+
+                @if (mobileAppTheme() === 'sms' || mobileAppTheme() === 'whatsapp' || mobileAppTheme() === 'marketplace') {
+                  <div class="chat-composer-bar" aria-hidden="true">
+                    <span>Escribe un mensaje...</span>
+                    <span class="material-symbols-rounded xs">send</span>
+                  </div>
+                }
+              </div>
+
+              <!-- Phone Bottom Confirm Control -->
+              <div class="phone-bottom-controls">
+                @if (!closed()) {
+                  <button type="button" class="confirm-btn mint-glow full" (click)="check()">
+                    <span class="material-symbols-rounded sm">task_alt</span>
+                    <span>Confirmar mi análisis</span>
+                  </button>
+                } @else {
+                  <button type="button" class="confirm-btn mint-glow full" (click)="next()">
+                    <span>{{ index() + 1 >= module().scenarios.length ? 'Finalizar módulo' : 'Siguiente ejercicio' }}</span>
+                    <span class="material-symbols-rounded sm">arrow_forward</span>
+                  </button>
+                }
+              </div>
             </div>
-          </div>
-        </aside>
+          </section>
+        }
       </div>
 
-      <!-- =====================================================
-           MOBILE PHONE SIMULATOR VIEW (Auto on mobile, toggleable on desktop)
-      ====================================================== -->
-      <div class="phone-simulator-panel">
-        <div class="phone-bezel">
-          <div class="phone-status-bar">
-            <span>9:41</span>
-            <div class="phone-island"></div>
-            <span class="phone-icons">5G · 🔋</span>
-          </div>
+      <!-- COMPACT, NON-REPETITIVE RIGHT MISSION CONTROL -->
+      <aside class="mission-rail">
+        <div class="rail-dark-card">
+          <span class="rail-kicker">ESCENARIO {{ index() + 1 }} DE {{ module().scenarios.length }}</span>
+          <h3>{{ scenario().title }}</h3>
 
-          <div class="phone-instruction">
-            👆 Toca lo que te parezca <strong>SOSPECHOSO</strong>
-          </div>
-
-          <div [class]="'phone-app-screen ' + scenario().frame">
-            <div class="phone-app-bar">
-              <strong>{{ scenario().appHeader || scenario().title }}</strong>
-              @if (scenario().addressBar) {
-                <div class="phone-address">{{ scenario().addressBar }}</div>
-              }
+          <div class="rail-metrics">
+            <div>
+              <strong>{{ index() + 1 }} / {{ module().scenarios.length }}</strong>
+              <small>Ejercicio</small>
             </div>
-
-            <div class="phone-elements">
-              @for (p of scenario().parts; track p.id) {
-                <button
-                  type="button"
-                  [class]="'phone-part ' + p.kind + ' ' + state(p)"
-                  (click)="pick(p)"
-                >
-                  <span class="phone-part-label">{{ kindLabel(p.kind) }}</span>
-                  <span class="phone-part-text">{{ p.text }}</span>
-                  @if (state(p) === 'found') {
-                    <span class="phone-badge ok">✓ Peligroso (+10 XP)</span>
-                  } @else if (state(p) === 'wrong') {
-                    <span class="phone-badge bad">✗ Seguro (-1 vida)</span>
-                  } @else if (state(p) === 'missed') {
-                    <span class="phone-badge missed">⚠️ Se escapó</span>
-                  }
-                </button>
-              }
+            <div>
+              <strong>{{ found().length }}</strong>
+              <small>Halladas</small>
             </div>
           </div>
 
-          <div class="phone-bottom-bar">
+          <p class="rail-guide-line">
+            Al descubrir todas las trampas ganas al instante. Si todo el escenario es legítimo, confirma abajo.
+          </p>
+
+          <div class="rail-action-wrap">
             @if (!closed()) {
-              <button type="button" class="primary full-width" (click)="check()">
-                Confirmar análisis <span>✓</span>
+              <button type="button" class="confirm-btn mint-glow full" (click)="check()">
+                <span class="material-symbols-rounded sm">task_alt</span>
+                <span>Confirmar mi análisis</span>
               </button>
             } @else {
-              <button type="button" class="primary full-width" (click)="next()">
-                Siguiente escenario <span>→</span>
+              <button type="button" class="confirm-btn mint-glow full" (click)="next()">
+                <span>{{ index() + 1 >= module().scenarios.length ? 'Finalizar módulo' : 'Siguiente ejercicio' }}</span>
+                <span class="material-symbols-rounded sm">arrow_forward</span>
               </button>
             }
           </div>
         </div>
-      </div>
+
+        <div class="rail-assist-card">
+          <button
+            type="button"
+            class="assist-toggle"
+            (click)="tipsOpen.set(!tipsOpen())"
+            [attr.aria-expanded]="tipsOpen()"
+          >
+            <span class="assist-left">
+              <span class="material-symbols-rounded sm tip-ico">lightbulb</span>
+              <strong>Pistas rápidas</strong>
+            </span>
+            <span class="material-symbols-rounded sm">{{ tipsOpen() ? 'expand_less' : 'expand_more' }}</span>
+          </button>
+
+          @if (tipsOpen()) {
+            <ul class="assist-list">
+              @for (t of module().tips; track t) {
+                <li>{{ t }}</li>
+              }
+            </ul>
+          }
+
+          <button type="button" class="rail-help-btn" (click)="openHelp()">
+            <span class="material-symbols-rounded sm">menu_book</span>
+            <span>Consultar glosario</span>
+          </button>
+        </div>
+      </aside>
     </div>
   }
 
   <!-- =====================================================
-       FULL-SCREEN MOCKUP-STYLE FEEDBACK OVERLAY
+       FULL-SCREEN EDUCATIONAL MOCKUP FEEDBACK OVERLAY
   ====================================================== -->
   @if (overlay(); as ov) {
     <div
       class="feedback-overlay"
       [class.is-positive]="ov.isPositive"
       [class.is-negative]="!ov.isPositive"
+      [class.is-celebration]="ov.celebration"
       role="dialog"
       aria-modal="true"
     >
       <div class="feedback-sheet">
-        <div class="feedback-hero-icon" [class.ok]="ov.isPositive" [class.bad]="!ov.isPositive">
-          <span>{{ ov.isPositive ? '✓' : '✕' }}</span>
+        <div
+          class="feedback-hero-icon"
+          [class.ok]="ov.isPositive && !ov.celebration"
+          [class.celebrate]="ov.celebration"
+          [class.bad]="!ov.isPositive"
+        >
+          <span class="material-symbols-rounded xl">
+            {{ ov.celebration ? 'emoji_events' : ov.isPositive ? 'check' : 'close' }}
+          </span>
         </div>
 
         <h1 class="feedback-title">{{ ov.title }}</h1>
@@ -234,30 +923,56 @@
           </span>
         }
 
-        @if (ov.tappedText) {
+        @if (ov.foundParts && ov.foundParts.length > 0) {
+          <div class="feedback-card found-summary-card">
+            <span class="card-kicker">LO QUE ENCONTRASTE EN ESTE EJERCICIO</span>
+            <ul>
+              @for (item of ov.foundParts; track item.id) {
+                <li>
+                  <span class="material-symbols-rounded sm found-check-ico">check_circle</span>
+                  <div>
+                    <strong>{{ item.text }}</strong>
+                    <small>{{ item.category || kindLabel(item.kind) }}</small>
+                  </div>
+                </li>
+              }
+            </ul>
+          </div>
+        } @else if (ov.tappedText) {
           <div class="feedback-card tapped-card">
-            <span class="card-kicker">ELEMENTO QUE TOCASTE</span>
+            <span class="card-kicker">ELEMENTO QUE SELECCIONASTE</span>
             <p class="tapped-quote">"{{ ov.tappedText }}"</p>
+          </div>
+        }
+
+        @if (ov.remainingCue) {
+          <div class="remaining-cue-pill">
+            <span class="material-symbols-rounded xs">troubleshoot</span>
+            <span>{{ ov.remainingCue }}</span>
           </div>
         }
 
         <div class="feedback-card why-card">
           <div class="why-header">
-            <span>💡</span>
-            <strong>{{ ov.isPositive ? '¿Por qué es importante?' : '¿Por qué te equivocaste?' }}</strong>
+            <span class="material-symbols-rounded sm why-ico">lightbulb</span>
+            <strong>{{ ov.isPositive ? '¿Por qué es sospechoso?' : '¿Por qué estaba bien / qué pasó?' }}</strong>
           </div>
           <p>{{ ov.why }}</p>
 
           @if (ov.whatItMeans) {
             <div class="meaning-box">
-              <strong>📘 ¿Qué significa?</strong>
+              <strong>
+                <span class="material-symbols-rounded xs">menu_book</span>
+                ¿Qué significa?
+              </strong>
               <p>{{ ov.whatItMeans }}</p>
             </div>
           }
 
           @if (ov.tip) {
             <div class="tip-line">
-              🛡️ <strong>Regla práctica:</strong> {{ ov.tip }}
+              <span class="material-symbols-rounded xs">shield</span>
+              <span><strong>Regla práctica:</strong> {{ ov.tip }}</span>
             </div>
           }
         </div>
@@ -268,7 +983,10 @@
             <ul>
               @for (m of ov.missedParts; track m.id) {
                 <li>
-                  <strong>⚠️ {{ m.text }}</strong>
+                  <strong>
+                    <span class="material-symbols-rounded xs">warning</span>
+                    {{ m.text }}
+                  </strong>
                   <small>{{ m.why }}</small>
                 </li>
               }
@@ -283,14 +1001,20 @@
             </span>
             <span class="pill-hearts">
               @for (h of hearts(); track $index) {
-                <span>{{ h ? '❤️' : '🤍' }}</span>
+                <span class="material-symbols-rounded sm heart-ico" [class.alive]="h" [class.lost]="!h">
+                  favorite
+                </span>
               }
             </span>
           </div>
         }
 
         <div class="overlay-progress-count">
-          {{ evaluatedCount() }} de {{ scenario().parts.length }} elementos evaluados en este escenario
+          @if (ov.celebration) {
+            Ejercicio {{ index() + 1 }} de {{ module().scenarios.length }} completado · ¡Sigue avanzando!
+          } @else {
+            {{ found().length }} {{ found().length === 1 ? 'amenaza detectada' : 'amenazas detectadas' }} en este ejercicio
+          }
         </div>
 
         <div class="overlay-actions">
@@ -301,13 +1025,16 @@
             [class.bad]="!ov.isPositive"
             (click)="handleOverlayAction()"
           >
-            {{
-              ov.actionType === 'finish-lost'
-                ? 'Ver resumen del intento →'
-                : ov.actionType === 'advance'
-                  ? (index() + 1 >= module().scenarios.length ? 'Finalizar módulo →' : 'Siguiente escenario →')
-                  : 'Continuar →'
-            }}
+            <span>
+              {{
+                ov.actionType === 'finish-lost'
+                  ? 'Ver resumen del intento'
+                  : ov.actionType === 'advance'
+                    ? (index() + 1 >= module().scenarios.length ? 'Finalizar módulo' : 'Siguiente ejercicio')
+                    : 'Continuar estudiando'
+              }}
+            </span>
+            <span class="material-symbols-rounded sm">arrow_forward</span>
           </button>
 
           @if (ov.glossaryTermId) {
@@ -316,7 +1043,8 @@
               class="overlay-glossary-link"
               (click)="openHelp(ov.glossaryCategory, ov.glossaryTermId)"
             >
-              📚 Leer más en el Glosario
+              <span class="material-symbols-rounded sm">menu_book</span>
+              <span>Leer más en el Glosario</span>
             </button>
           }
         </div>
@@ -328,21 +1056,25 @@
        LOST SCREEN
   ====================================================== -->
   @if (status() === 'lost') {
-    <div class="end lost-end">
-      <div class="end-icon">💔</div>
+    <div class="end-screen">
+      <div class="end-ico-circle lost">
+        <span class="material-symbols-rounded xl">heart_broken</span>
+      </div>
       <h1>Te quedaste sin vidas</h1>
       <p>
-        Lograste acumular <strong>{{ xp() }} XP</strong> en este intento. No te preocupes: equivocarse aquí es la mejor forma de aprender antes de que pase en la vida real.
+        Lograste acumular <strong>{{ xp() }} XP</strong> y detectar <strong>{{ threatsFoundTotal() }}</strong> señales en este intento. Repasar tus errores aquí te prepara para no caer afuera.
       </p>
 
       <div class="end-buttons">
-        <button type="button" class="help-btn large" (click)="openHelp()">
-          📚 Repasar Glosario de Ayuda
+        <button type="button" class="glossary-pill large" (click)="openHelp()">
+          <span class="material-symbols-rounded sm">menu_book</span>
+          <span>Repasar Glosario</span>
         </button>
-        <button type="button" class="primary" (click)="retry()">
-          Reintentar módulo <span>↺</span>
+        <button type="button" class="confirm-btn" (click)="retry()">
+          <span class="material-symbols-rounded sm">replay</span>
+          <span>Reintentar módulo</span>
         </button>
-        <a class="exit-btn" routerLink="/profile">Regresar a mi perfil</a>
+        <a class="back-pill" routerLink="/profile">Volver a mi perfil</a>
       </div>
     </div>
   }
@@ -351,11 +1083,13 @@
        WON SCREEN
   ====================================================== -->
   @if (status() === 'won') {
-    <div class="end won-end">
-      <div class="end-icon">🏆</div>
+    <div class="end-screen">
+      <div class="end-ico-circle won">
+        <span class="material-symbols-rounded xl">emoji_events</span>
+      </div>
       <h1>¡Módulo completado con éxito!</h1>
       <p>
-        ¡Excelente criterio! Has completado <strong>{{ module().title }}</strong> y tu progreso ya quedó guardado en tu perfil.
+        Has completado <strong>{{ module().title }}</strong>. Tu puntaje, experiencia y el desbloqueo correspondiente ya quedaron guardados en tu perfil.
       </p>
 
       <div class="won-summary-grid">
@@ -364,26 +1098,29 @@
           <small>Experiencia ganada</small>
         </div>
         <div>
-          <strong>{{ lives() }} / {{ maxLives }} ❤️</strong>
+          <strong>{{ lives() }} / {{ maxLives }}</strong>
           <small>Vidas conservadas</small>
         </div>
         <div>
           <strong>{{ accuracyScore() }}%</strong>
-          <small>Puntaje obtenido</small>
+          <small>Precisión obtenida</small>
         </div>
       </div>
 
       <div class="end-buttons">
         @if (module().nextRoute) {
-          <a class="primary" [routerLink]="module().nextRoute">
-            Siguiente: {{ module().nextTitle }} <span>→</span>
+          <a class="confirm-btn" [routerLink]="module().nextRoute">
+            <span>Siguiente: {{ module().nextTitle }}</span>
+            <span class="material-symbols-rounded sm">arrow_forward</span>
           </a>
         }
         <a class="secondary-action-btn" routerLink="/profile">
-          Ver mi perfil y logros
+          <span class="material-symbols-rounded sm">account_circle</span>
+          <span>Ver mi perfil actualizado</span>
         </a>
-        <button type="button" class="exit-btn" (click)="retry()">
-          Volver a practicar ↺
+        <button type="button" class="back-pill" (click)="retry()">
+          <span class="material-symbols-rounded sm">replay</span>
+          <span>Volver a practicar</span>
         </button>
       </div>
     </div>
