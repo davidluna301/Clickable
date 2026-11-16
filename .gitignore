@@ -30,6 +30,7 @@ yarn-error.log
 .history/*
 
 # Miscellaneous
+firebase-debug.log*
 /.angular
 /.angular/cache
 /.kilo

@@ -1,5 +1,6 @@
 {
   "hosting": {
+    "site": "buzonucc",
     "public": "dist/clickable/browser",
     "ignore": [
       "firebase.json",
