@@ -15,6 +15,13 @@ export const routes: Routes = [
   },
   { path: 'profile', component: Profile, canActivate: [authGuard] },
   {
+    path: 'classroom',
+    loadComponent: () =>
+      import('./classroom/classroom').then((m) => m.ClassroomComponent),
+  },
+  { path: 'docente', redirectTo: 'classroom' },
+  { path: 'aula', redirectTo: 'classroom' },
+  {
     path: 'game',
     canActivate: [authGuard],
     loadChildren: () => import('./game/game.routes').then((m) => m.GAME_ROUTES),

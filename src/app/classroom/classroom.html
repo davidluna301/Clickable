@@ -1,0 +1,418 @@
+<!-- TOP NAVIGATION -->
+<app-public-nav activePage="classroom" />
+
+<main class="class-main-wrap">
+  <div class="class-container">
+    <!-- BREADCRUMB / BACK LINK -->
+    <div class="back-link-bar">
+      <a routerLink="/profile" class="back-link">
+        <span class="material-symbols-rounded sm">arrow_back</span>
+        Volver a mi perfil
+      </a>
+    </div>
+
+    <!-- HERO COMMAND FOR CLASSROOM -->
+    <header class="class-header">
+      <div class="header-left">
+        <span class="institution-chip">
+          <span class="material-symbols-rounded xs">school</span>
+          {{ classroomService.activeClassroom()?.institution || 'Universidad Cooperativa de Colombia' }}
+        </span>
+        <h1>Modo Aula & Panel Docente</h1>
+        <p class="header-desc">
+          Seguimiento en tiempo real del progreso estudiantil, análisis de precisión y detección de módulos críticos de ciberseguridad.
+        </p>
+      </div>
+
+      <div class="header-actions">
+        <!-- Room Selector Dropdown -->
+        @if (classroomService.classrooms().length > 1) {
+          <div class="room-selector-wrap">
+            <label for="roomSelect">Aula activa:</label>
+            <select
+              id="roomSelect"
+              [value]="classroomService.activeClassCode()"
+              (change)="classroomService.selectClassroom($any($event.target).value)"
+            >
+              @for (room of classroomService.classrooms(); track room.code) {
+                <option [value]="room.code">{{ room.name }} ({{ room.code }})</option>
+              }
+            </select>
+          </div>
+        }
+
+        <button type="button" class="btn primary glow" (click)="showCreateModal.set(true)">
+          <span class="material-symbols-rounded sm">add</span>
+          Crear nueva aula
+        </button>
+      </div>
+    </header>
+
+    <!-- TABS BAR -->
+    <nav class="class-tabs" aria-label="Pestañas de aula">
+      <button
+        type="button"
+        class="tab-btn"
+        [class.active]="activeTab() === 'dashboard'"
+        (click)="activeTab.set('dashboard')"
+      >
+        <span class="material-symbols-rounded sm">dashboard</span>
+        Panel del Docente
+      </button>
+
+      <button
+        type="button"
+        class="tab-btn"
+        [class.active]="activeTab() === 'join'"
+        (click)="activeTab.set('join')"
+      >
+        <span class="material-symbols-rounded sm">group_add</span>
+        Unirse con Código
+      </button>
+    </nav>
+
+    <!-- TAB 1: TEACHER DASHBOARD -->
+    @if (activeTab() === 'dashboard') {
+      @if (classroomService.activeClassroom(); as room) {
+        <!-- CLASS CODE BANNER -->
+        <section class="code-banner">
+          <div class="code-info">
+            <span class="code-label">CÓDIGO DE CLASE PARA ESTUDIANTES</span>
+            <div class="code-display">
+              <strong class="code-text">{{ room.code }}</strong>
+              <button
+                type="button"
+                class="copy-btn"
+                (click)="copyCode(room.code)"
+                title="Copiar código de clase"
+              >
+                <span class="material-symbols-rounded sm">
+                  {{ copiedCode() ? 'check' : 'content_copy' }}
+                </span>
+                <span>{{ copiedCode() ? '¡Copiado!' : 'Copiar' }}</span>
+              </button>
+            </div>
+            <small class="code-sub">
+              Comparte este código con tus estudiantes para que se matriculen en esta aula.
+            </small>
+          </div>
+
+          <div class="teacher-badge">
+            <div class="teacher-avatar">
+              <span class="material-symbols-rounded md">psychology_alt</span>
+            </div>
+            <div>
+              <strong>{{ room.teacherName }}</strong>
+              <span>Docente titular · {{ room.subject }}</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- KPI METRICS STRIP -->
+        <section class="kpi-strip" aria-label="Métricas del curso">
+          <article class="kpi-card">
+            <div class="kpi-ico kpi-mint">
+              <span class="material-symbols-rounded md">groups</span>
+            </div>
+            <div>
+              <strong>{{ classroomService.classStats().totalStudents }}</strong>
+              <span>Estudiantes matriculados</span>
+            </div>
+          </article>
+
+          <article class="kpi-card">
+            <div class="kpi-ico kpi-blue">
+              <span class="material-symbols-rounded md">task_alt</span>
+            </div>
+            <div>
+              <strong>{{ classroomService.classStats().averageProgress }}%</strong>
+              <span>Avance global del grupo</span>
+            </div>
+          </article>
+
+          <article class="kpi-card">
+            <div class="kpi-ico kpi-yellow">
+              <span class="material-symbols-rounded md">track_changes</span>
+            </div>
+            <div>
+              <strong>{{ classroomService.classStats().averageAccuracy }}%</strong>
+              <span>Precisión media del aula</span>
+            </div>
+          </article>
+
+          <article class="kpi-card kpi-alert-card">
+            <div class="kpi-ico kpi-red">
+              <span class="material-symbols-rounded md">warning</span>
+            </div>
+            <div>
+              <strong>{{ classroomService.classStats().mostCriticalModule }}</strong>
+              <span>Módulo con más errores en el curso</span>
+            </div>
+          </article>
+        </section>
+
+        <!-- STUDENTS ROSTER TABLE -->
+        <section class="roster-panel">
+          <div class="roster-header">
+            <div class="roster-title-stack">
+              <h2>Listado de Estudiantes</h2>
+              <span class="student-count-chip">
+                {{ filteredStudents().length }} estudiantes registrados
+              </span>
+            </div>
+
+            <!-- FILTERS & SEARCH -->
+            <div class="roster-controls">
+              <div class="search-box">
+                <span class="material-symbols-rounded xs">search</span>
+                <input
+                  type="text"
+                  placeholder="Buscar por nombre o correo..."
+                  [value]="searchQuery()"
+                  (input)="searchQuery.set($any($event.target).value)"
+                />
+              </div>
+
+              <div class="filter-chips">
+                <button
+                  type="button"
+                  class="filter-chip"
+                  [class.active]="filterStatus() === 'todos'"
+                  (click)="filterStatus.set('todos')"
+                >
+                  Todos
+                </button>
+                <button
+                  type="button"
+                  class="filter-chip chip-destacado"
+                  [class.active]="filterStatus() === 'destacado'"
+                  (click)="filterStatus.set('destacado')"
+                >
+                  Destacados
+                </button>
+                <button
+                  type="button"
+                  class="filter-chip chip-al-dia"
+                  [class.active]="filterStatus() === 'al-dia'"
+                  (click)="filterStatus.set('al-dia')"
+                >
+                  Al día
+                </button>
+                <button
+                  type="button"
+                  class="filter-chip chip-en-riesgo"
+                  [class.active]="filterStatus() === 'en-riesgo'"
+                  (click)="filterStatus.set('en-riesgo')"
+                >
+                  Requieren apoyo
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- TABLE -->
+          <div class="table-responsive">
+            <table class="roster-table">
+              <thead>
+                <tr>
+                  <th>Estudiante</th>
+                  <th>Progreso</th>
+                  <th>Precisión</th>
+                  <th>Módulo más crítico</th>
+                  <th>Experiencia</th>
+                  <th>Estado</th>
+                  <th>Última actividad</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (s of filteredStudents(); track s.id) {
+                  <tr>
+                    <td>
+                      <div class="student-cell">
+                        <div class="student-avatar">{{ s.avatarText }}</div>
+                        <div class="student-names">
+                          <strong>{{ s.name }}</strong>
+                          <small>{{ s.email }}</small>
+                        </div>
+                      </div>
+                    </td>
+
+                    <td>
+                      <div class="progress-cell">
+                        <div class="prog-track">
+                          <span class="prog-fill" [style.width.%]="s.progressPct"></span>
+                        </div>
+                        <span class="prog-label">{{ s.completedModules }}/{{ s.totalModules }} ({{ s.progressPct }}%)</span>
+                      </div>
+                    </td>
+
+                    <td>
+                      <span class="accuracy-badge" [class.high]="s.accuracyPct >= 80" [class.med]="s.accuracyPct >= 70 && s.accuracyPct < 80" [class.low]="s.accuracyPct < 70">
+                        {{ s.accuracyPct }}%
+                      </span>
+                    </td>
+
+                    <td>
+                      <span class="failed-mod-chip">
+                        <span class="material-symbols-rounded xs">bug_report</span>
+                        {{ s.mostFailedModule }}
+                      </span>
+                    </td>
+
+                    <td>
+                      <span class="xp-cell">
+                        <span class="material-symbols-rounded xs">bolt</span>
+                        {{ s.xp }} XP
+                      </span>
+                    </td>
+
+                    <td>
+                      @if (s.status === 'destacado') {
+                        <span class="status-pill status-destacado">
+                          <span class="material-symbols-rounded xs">verified</span>
+                          Destacado
+                        </span>
+                      } @else if (s.status === 'al-dia') {
+                        <span class="status-pill status-al-dia">
+                          <span class="material-symbols-rounded xs">check_circle</span>
+                          Al día
+                        </span>
+                      } @else {
+                        <span class="status-pill status-riesgo">
+                          <span class="material-symbols-rounded xs">error</span>
+                          Requiere apoyo
+                        </span>
+                      }
+                    </td>
+
+                    <td>
+                      <span class="last-active">{{ s.lastActive }}</span>
+                    </td>
+                  </tr>
+                } @empty {
+                  <tr>
+                    <td colspan="7" class="empty-state">
+                      <span class="material-symbols-rounded lg">search_off</span>
+                      <p>No se encontraron estudiantes con los filtros aplicados.</p>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </section>
+      }
+    }
+
+    <!-- TAB 2: JOIN WITH CODE -->
+    @if (activeTab() === 'join') {
+      <section class="join-card-shell">
+        <div class="join-card">
+          <div class="join-icon">
+            <span class="material-symbols-rounded xl">vpn_key</span>
+          </div>
+
+          <h2>Unirse a un Aula de Clase</h2>
+          <p>
+            Ingresa el código proporcionado por tu docente de la Universidad Cooperativa para vincular tu progreso a la electiva.
+          </p>
+
+          <form (submit)="submitJoinClassroom(); $event.preventDefault()" class="join-form">
+            <div class="input-group">
+              <label for="classCodeInput">Código del Aula</label>
+              <input
+                id="classCodeInput"
+                type="text"
+                placeholder="Ej: ELECTIVA-6A-UCC"
+                [value]="inputJoinCode()"
+                (input)="inputJoinCode.set($any($event.target).value)"
+                class="code-input"
+                required
+              />
+            </div>
+
+            @if (joinMessage(); as msg) {
+              <div class="alert-box" [class.success]="msg.success" [class.error]="!msg.success">
+                <span class="material-symbols-rounded sm">
+                  {{ msg.success ? 'check_circle' : 'error' }}
+                </span>
+                <span>{{ msg.text }}</span>
+              </div>
+            }
+
+            <div class="join-actions">
+              <button type="submit" class="btn primary glow full">
+                <span class="material-symbols-rounded sm">login</span>
+                Vincular mi progreso
+              </button>
+            </div>
+          </form>
+        </div>
+      </section>
+    }
+  </div>
+</main>
+
+<!-- CREATE CLASSROOM MODAL -->
+@if (showCreateModal()) {
+  <div class="modal-overlay" (click)="showCreateModal.set(false)">
+    <div class="modal-dialog" (click)="$event.stopPropagation()">
+      <div class="modal-head">
+        <div class="modal-title">
+          <span class="material-symbols-rounded sm">add_circle</span>
+          <h3>Crear nueva aula de clase</h3>
+        </div>
+        <button type="button" class="close-btn" (click)="showCreateModal.set(false)">
+          <span class="material-symbols-rounded sm">close</span>
+        </button>
+      </div>
+
+      <form (submit)="submitCreateClassroom(); $event.preventDefault()" class="modal-form">
+        <div class="input-field">
+          <label for="className">Nombre del Grupo / Aula</label>
+          <input
+            id="className"
+            type="text"
+            placeholder="Ej: Grupo 6B - Electiva Seguridad"
+            [value]="newClassName()"
+            (input)="newClassName.set($any($event.target).value)"
+            required
+          />
+        </div>
+
+        <div class="input-field">
+          <label for="classSubject">Asignatura</label>
+          <input
+            id="classSubject"
+            type="text"
+            placeholder="Ej: Seguridad Informática"
+            [value]="newClassSubject()"
+            (input)="newClassSubject.set($any($event.target).value)"
+            required
+          />
+        </div>
+
+        <div class="input-field">
+          <label for="teacherName">Nombre del Docente Responsable</label>
+          <input
+            id="teacherName"
+            type="text"
+            placeholder="Ej: Prof. Ivonne Barco"
+            [value]="newTeacherName()"
+            (input)="newTeacherName.set($any($event.target).value)"
+            required
+          />
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn secondary" (click)="showCreateModal.set(false)">
+            Cancelar
+          </button>
+          <button type="submit" class="btn primary">
+            Generar código de clase
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
