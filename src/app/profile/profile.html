@@ -219,7 +219,7 @@
 
       <div class="cyber-badge-action">
         @if (progress.hasCyberSecurityBadge()) {
-          <button type="button" class="btn primary glow" (click)="showCertificateModal.set(true)">
+          <button type="button" class="btn-cert-hero-action" (click)="showCertificateModal.set(true)">
             <span class="material-symbols-rounded sm">workspace_premium</span>
             Ver Reconocimiento Oficial
           </button>
@@ -345,6 +345,67 @@
 
       <!-- RIGHT: COMPACT ACHIEVEMENTS, RECENT ACTIVITY & SESSION SETTINGS -->
       <aside class="dash-right">
+        <!-- MI AULA UNIVERSITARIA (UCC) -->
+        <section class="side-card classroom-card">
+          <div class="side-head">
+            <div class="class-head-title">
+              <span class="material-symbols-rounded sm class-icon-badge">school</span>
+              <h3>Mi Aula Universitaria</h3>
+            </div>
+            <span class="class-code-chip">{{ classroom.activeClassroom()?.code || 'ELECTIVA-6A-UCC' }}</span>
+          </div>
+
+          <div class="class-content">
+            <strong class="class-group-name">{{ classroom.activeClassroom()?.name || 'Grupo 6A - Electiva de Seguridad' }}</strong>
+            <p class="class-teacher-note">
+              Docente: <span>{{ classroom.activeClassroom()?.teacherName || 'Prof. Ivonne Barco' }}</span>
+            </p>
+            <p class="class-subtext">
+              Tu progreso y nivel de precisión se sincronizan en vivo con tu aula.
+            </p>
+
+            <div class="class-actions-row">
+              <a routerLink="/classroom" class="btn-class-go">
+                <span class="material-symbols-rounded sm">analytics</span>
+                <span>Panel del Aula</span>
+              </a>
+
+              <button
+                type="button"
+                class="btn-class-link-toggle"
+                (click)="showChangeClass.set(!showChangeClass())"
+                title="Vincular un código de clase diferente"
+              >
+                <span class="material-symbols-rounded sm">vpn_key</span>
+                <span>{{ showChangeClass() ? 'Cerrar' : 'Código' }}</span>
+              </button>
+            </div>
+
+            @if (showChangeClass()) {
+              <form (submit)="joinClassFromProfile(); $event.preventDefault()" class="class-inline-form">
+                <div class="class-input-wrap">
+                  <input
+                    type="text"
+                    placeholder="Código (ej. ELECTIVA-6A-UCC)"
+                    [value]="classCodeInput()"
+                    (input)="classCodeInput.set($any($event.target).value)"
+                  />
+                  <button type="submit" class="btn-class-submit">
+                    Vincular
+                  </button>
+                </div>
+
+                @if (classJoinMessage(); as msg) {
+                  <div class="class-msg-box" [class.success]="msg.success" [class.error]="!msg.success">
+                    <span class="material-symbols-rounded xs">{{ msg.success ? 'check' : 'error' }}</span>
+                    <span>{{ msg.text }}</span>
+                  </div>
+                }
+              </form>
+            }
+          </div>
+        </section>
+
         <!-- VERIFIED BADGES -->
         <section class="side-card">
           <div class="side-head">
@@ -481,6 +542,13 @@
 
             <div class="cert-footer">
               <div class="cert-signature">
+                <div class="signature-drawing" aria-label="Firma de la docente Ivonne Barco">
+                  <svg viewBox="0 0 220 70" class="sig-svg" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M 28 48 C 22 28, 25 10, 32 14 C 36 17, 28 55, 42 45 C 50 36, 58 28, 65 38 C 70 45, 78 22, 85 36 C 90 44, 96 32, 104 42 C 108 48, 115 32, 122 42" stroke="#1d4ed8" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M 130 14 C 126 34, 124 54, 126 58 C 128 52, 142 18, 154 26 C 162 32, 152 54, 138 50 C 150 42, 170 34, 184 44 C 190 49, 202 30, 210 38" stroke="#1d4ed8" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M 22 56 C 70 54, 135 50, 200 52 C 212 53, 195 62, 160 64" stroke="#1d4ed8" stroke-width="1.8" stroke-linecap="round"/>
+                  </svg>
+                </div>
                 <span class="sig-line"></span>
                 <strong>Prof. Ivonne Barco</strong>
                 <small>Docente de Seguridad Informática · UCC</small>
@@ -497,12 +565,13 @@
       </div>
 
       <div class="cert-dialog-actions no-print">
-        <button type="button" class="btn secondary" (click)="showCertificateModal.set(false)">
-          Cerrar
+        <button type="button" class="btn-modal-close" (click)="showCertificateModal.set(false)">
+          <span class="material-symbols-rounded sm">close</span>
+          <span>Cerrar</span>
         </button>
-        <button type="button" class="btn primary glow" (click)="printCertificate()">
+        <button type="button" class="btn-modal-print" (click)="printCertificate()">
           <span class="material-symbols-rounded sm">print</span>
-          Imprimir / Guardar en PDF
+          <span>Imprimir / Guardar en PDF</span>
         </button>
       </div>
     </div>
