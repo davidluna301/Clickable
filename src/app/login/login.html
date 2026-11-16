@@ -1,24 +1,8 @@
 <div class="auth-page">
-  <nav class="site-nav" aria-label="Navegación principal">
-    <a routerLink="/home" class="site-brand">
-      <span class="logo-icon">C</span>
-      <span>Clickable<span class="green">.</span></span>
-    </a>
-
-    <div class="site-links">
-      <a routerLink="/home">Inicio del proyecto</a>
-      <button type="button" class="nav-link-btn" [class.active]="mode() === 'login'" (click)="switchMode('login')">
-        Iniciar sesión
-      </button>
-      <button type="button" class="nav-link-btn" [class.active]="mode() === 'register'" (click)="switchMode('register')">
-        Crear cuenta
-      </button>
-    </div>
-
-    <button type="button" class="site-cta" (click)="switchMode(mode() === 'register' ? 'login' : 'register')">
-      {{ mode() === 'register' ? 'Ya tengo cuenta' : 'Empezar ahora' }} <span>→</span>
-    </button>
-  </nav>
+  <app-public-nav
+    [activePage]="mode() === 'register' ? 'register' : 'login'"
+    (authSwitch)="switchMode($event)"
+  />
 
   <!-- ==================================================
        LOGIN & FORGOT PASSWORD
@@ -46,9 +30,24 @@
               </p>
 
               <div class="security-points">
-                <div><span class="point-icon">✓</span> Aprende jugando con casos reales</div>
-                <div><span class="point-icon">✓</span> Descubre por qué cada señal es phishing o segura</div>
-                <div><span class="point-icon">✓</span> Guarda tu avance y sube de nivel</div>
+                <div>
+                  <span class="point-icon">
+                    <span class="material-symbols-rounded sm">check</span>
+                  </span>
+                  Aprende jugando en simuladores reales
+                </div>
+                <div>
+                  <span class="point-icon">
+                    <span class="material-symbols-rounded sm">check</span>
+                  </span>
+                  Descubre por qué cada señal es phishing o segura
+                </div>
+                <div>
+                  <span class="point-icon">
+                    <span class="material-symbols-rounded sm">check</span>
+                  </span>
+                  Guarda tu avance y desbloquea módulos
+                </div>
               </div>
             </div>
 
@@ -69,13 +68,14 @@
 
             @if (returnUrl()) {
               <div class="info-banner">
-                🔒 Inicia sesión o crea tu cuenta para acceder a tu perfil y a los módulos de entrenamiento.
+                <span class="material-symbols-rounded sm">lock</span>
+                <span>Inicia sesión o crea tu cuenta para entrar a tu perfil y acceder a los módulos.</span>
               </div>
             }
 
             @if (!isFirebaseMode()) {
               <div class="firebase-hint">
-                <span>⚡</span>
+                <span class="material-symbols-rounded sm">bolt</span>
                 <small>
                   <strong>Firebase listo para conectar:</strong> agrega tus credenciales en
                   <code>src/environments/environment.ts</code>. Mientras tanto, puedes usar registro y login local sin restricciones.
@@ -87,21 +87,29 @@
               <div class="auth-heading">
                 <span class="mini-label">BIENVENIDO DE NUEVO</span>
                 <h2>Inicia sesión</h2>
-                <p>Continúa aprendiendo sobre seguridad digital desde tu perfil.</p>
+                <p>Entra directo a tu perfil y continúa desbloqueando módulos.</p>
               </div>
 
               @if (errorMsg()) {
-                <div class="alert error" role="alert">⚠️ {{ errorMsg() }}</div>
+                <div class="alert error" role="alert">
+                  <span class="material-symbols-rounded sm">warning</span>
+                  <span>{{ errorMsg() }}</span>
+                </div>
               }
               @if (successMsg()) {
-                <div class="alert success" role="status">✓ {{ successMsg() }}</div>
+                <div class="alert success" role="status">
+                  <span class="material-symbols-rounded sm">check_circle</span>
+                  <span>{{ successMsg() }}</span>
+                </div>
               }
 
               <form (ngSubmit)="submitLogin()" novalidate>
                 <div class="input-group">
                   <label for="login-email">Correo electrónico</label>
                   <div class="input-wrapper">
-                    <span class="input-prefix">&#64;</span>
+                    <span class="input-prefix">
+                      <span class="material-symbols-rounded sm outline">alternate_email</span>
+                    </span>
                     <input
                       id="login-email"
                       name="loginEmail"
@@ -124,7 +132,9 @@
                   </div>
 
                   <div class="input-wrapper">
-                    <span class="input-prefix">•••</span>
+                    <span class="input-prefix">
+                      <span class="material-symbols-rounded sm outline">lock</span>
+                    </span>
                     <input
                       id="login-password"
                       name="loginPassword"
@@ -141,7 +151,9 @@
                       (click)="showLoginPass.set(!showLoginPass())"
                       [attr.aria-label]="showLoginPass() ? 'Ocultar contraseña' : 'Mostrar contraseña'"
                     >
-                      {{ showLoginPass() ? 'Ocultar' : 'Ver' }}
+                      <span class="material-symbols-rounded sm outline">
+                        {{ showLoginPass() ? 'visibility_off' : 'visibility' }}
+                      </span>
                     </button>
                   </div>
                 </div>
@@ -158,7 +170,7 @@
 
                 <button type="submit" class="main-button" [disabled]="loading()">
                   {{ loading() ? 'Ingresando...' : 'Iniciar sesión' }}
-                  <span>→</span>
+                  <span class="material-symbols-rounded sm">arrow_forward</span>
                 </button>
               </form>
 
@@ -188,17 +200,25 @@
               </div>
 
               @if (errorMsg()) {
-                <div class="alert error" role="alert">⚠️ {{ errorMsg() }}</div>
+                <div class="alert error" role="alert">
+                  <span class="material-symbols-rounded sm">warning</span>
+                  <span>{{ errorMsg() }}</span>
+                </div>
               }
               @if (successMsg()) {
-                <div class="alert success" role="status">✓ {{ successMsg() }}</div>
+                <div class="alert success" role="status">
+                  <span class="material-symbols-rounded sm">check_circle</span>
+                  <span>{{ successMsg() }}</span>
+                </div>
               }
 
               <form (ngSubmit)="submitForgot()" novalidate>
                 <div class="input-group">
                   <label for="forgot-email">Correo registrado</label>
                   <div class="input-wrapper">
-                    <span class="input-prefix">&#64;</span>
+                    <span class="input-prefix">
+                      <span class="material-symbols-rounded sm outline">alternate_email</span>
+                    </span>
                     <input
                       id="forgot-email"
                       name="forgotEmail"
@@ -213,13 +233,14 @@
 
                 <button type="submit" class="main-button" [disabled]="loading()">
                   {{ loading() ? 'Enviando...' : 'Enviar enlace de recuperación' }}
-                  <span>→</span>
+                  <span class="material-symbols-rounded sm">arrow_forward</span>
                 </button>
               </form>
 
               <p class="auth-switch">
                 <button type="button" class="switch-btn" (click)="switchMode('login')">
-                  ← Volver a Iniciar sesión
+                  <span class="material-symbols-rounded sm">arrow_back</span>
+                  Volver a Iniciar sesión
                 </button>
               </p>
             }
@@ -256,15 +277,15 @@
 
               <div class="level-preview">
                 <div class="level-header">
-                  <span>TU INICIO EN CLICKABLE</span>
+                  <span>TU RUTA EN CLICKABLE</span>
                   <strong>Nivel 01</strong>
                 </div>
                 <div class="progress-bar">
                   <span [style.width.%]="passwordStrength().score * 25"></span>
                 </div>
                 <div class="level-footer">
-                  <span>4 módulos interactivos</span>
-                  <span>+20 XP de bienvenida</span>
+                  <span>4 simuladores progresivos</span>
+                  <span>Progreso guardado por cuenta</span>
                 </div>
               </div>
             </div>
@@ -287,11 +308,14 @@
             <div class="auth-heading">
               <span class="mini-label">EMPIEZA AHORA</span>
               <h2>Crea tu cuenta</h2>
-              <p>Solo necesitas unos datos para entrar a tu perfil y comenzar a entrenar.</p>
+              <p>Regístrate para entrar de inmediato a tu perfil y comenzar el entrenamiento.</p>
             </div>
 
             @if (errorMsg()) {
-              <div class="alert error" role="alert">⚠️ {{ errorMsg() }}</div>
+              <div class="alert error" role="alert">
+                <span class="material-symbols-rounded sm">warning</span>
+                <span>{{ errorMsg() }}</span>
+              </div>
             }
 
             <form (ngSubmit)="submitRegister()" novalidate>
@@ -332,7 +356,9 @@
               <div class="input-group">
                 <label for="reg-email">Correo electrónico</label>
                 <div class="input-wrapper">
-                  <span class="input-prefix">&#64;</span>
+                  <span class="input-prefix">
+                    <span class="material-symbols-rounded sm outline">alternate_email</span>
+                  </span>
                   <input
                     id="reg-email"
                     name="regEmail"
@@ -349,7 +375,9 @@
               <div class="input-group">
                 <label for="reg-password">Contraseña</label>
                 <div class="input-wrapper">
-                  <span class="input-prefix">•••</span>
+                  <span class="input-prefix">
+                    <span class="material-symbols-rounded sm outline">lock</span>
+                  </span>
                   <input
                     id="reg-password"
                     name="regPassword"
@@ -364,8 +392,11 @@
                     type="button"
                     class="toggle-pass"
                     (click)="showRegPass.set(!showRegPass())"
+                    [attr.aria-label]="showRegPass() ? 'Ocultar contraseña' : 'Mostrar contraseña'"
                   >
-                    {{ showRegPass() ? 'Ocultar' : 'Ver' }}
+                    <span class="material-symbols-rounded sm outline">
+                      {{ showRegPass() ? 'visibility_off' : 'visibility' }}
+                    </span>
                   </button>
                 </div>
               </div>
@@ -398,7 +429,7 @@
 
               <button type="submit" class="main-button" [disabled]="loading()">
                 {{ loading() ? 'Creando cuenta...' : 'Crear mi cuenta' }}
-                <span>→</span>
+                <span class="material-symbols-rounded sm">arrow_forward</span>
               </button>
             </form>
 
@@ -430,7 +461,9 @@
       <div class="terms-modal" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
         <header>
           <h3>Términos y Privacidad · Clickable</h3>
-          <button type="button" (click)="showTermsModal.set(false)">✕</button>
+          <button type="button" (click)="showTermsModal.set(false)" aria-label="Cerrar">
+            <span class="material-symbols-rounded sm">close</span>
+          </button>
         </header>
         <p>
           Clickable es una plataforma educativa diseñada para entrenar tu criterio frente a amenazas digitales como phishing, malware, smishing y fraudes financieros.

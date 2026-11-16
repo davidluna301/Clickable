@@ -30,7 +30,9 @@ yarn-error.log
 .history/*
 
 # Miscellaneous
+/.angular
 /.angular/cache
+/.kilo
 .sass-cache/
 /connect.lock
 /coverage

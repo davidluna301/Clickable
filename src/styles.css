@@ -6,6 +6,7 @@
     --line: #dfe7e2;
     --green: #1d9b68;
     --green-dark: #11734c;
+    --mint: #05f4b3;
     --red: #e55353;
     --orange: #ee8c3a;
     --yellow: #d6a728;
@@ -43,4 +44,49 @@ button {
     border: 0;
     cursor: pointer;
     font: inherit;
+}
+
+.material-symbols-rounded {
+    font-family: "Material Symbols Rounded";
+    font-weight: normal;
+    font-style: normal;
+    font-size: 1.2em;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-smoothing: antialiased;
+    font-variation-settings: "FILL" 1, "wght" 500, "GRAD" 0, "opsz" 24;
+    user-select: none;
+    vertical-align: middle;
+    flex-shrink: 0;
+}
+
+.material-symbols-rounded.outline {
+    font-variation-settings: "FILL" 0, "wght" 500, "GRAD" 0, "opsz" 24;
+}
+
+.material-symbols-rounded.xs {
+    font-size: 0.88rem;
+}
+
+.material-symbols-rounded.sm {
+    font-size: 1rem;
+}
+
+.material-symbols-rounded.md {
+    font-size: 1.3rem;
+}
+
+.material-symbols-rounded.lg {
+    font-size: 1.65rem;
+}
+
+.material-symbols-rounded.xl {
+    font-size: 2.3rem;
 }

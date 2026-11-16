@@ -1,8 +1,7 @@
 import { Component, HostListener, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../services/auth.service';
-import { GlossaryCategory } from '../shared/glossary.data';
-import { HelpGlossary } from '../shared/help-glossary/help-glossary';
+import { PublicNav } from '../shared/public-nav/public-nav';
 
 interface HomeDemoSignal {
   id: string;
@@ -11,7 +10,7 @@ interface HomeDemoSignal {
 }
 
 @Component({
-  imports: [RouterLink, HelpGlossary],
+  imports: [RouterLink, PublicNav],
   selector: 'app-home',
   styleUrl: './home.css',
   templateUrl: './home.html',
@@ -20,9 +19,6 @@ export class Home {
   auth = inject(AuthService);
 
   scrolled = signal(false);
-  glossaryOpen = signal(false);
-  glossaryCategory = signal<GlossaryCategory>('all');
-  glossaryTerm = signal<string>('');
 
   // Interactive mini-simulation in #juego
   activeDemoSignal = signal<HomeDemoSignal | null>(null);
@@ -59,12 +55,6 @@ export class Home {
     if (el) {
       el.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
-  }
-
-  openGlossary(category: GlossaryCategory = 'all', termId = '') {
-    this.glossaryCategory.set(category);
-    this.glossaryTerm.set(termId);
-    this.glossaryOpen.set(true);
   }
 
   inspectDemo(key: 'sender' | 'urgency' | 'button') {

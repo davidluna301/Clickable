@@ -3,23 +3,6 @@
     margin: 0 auto;
 }
 
-.navbar {
-    position: sticky;
-    z-index: 10;
-    top: 0;
-    padding: 18px 0;
-    background: rgba(246, 248, 245, 0.92);
-    border-bottom: 1px solid transparent;
-    backdrop-filter: blur(14px);
-    transition: 0.25s ease;
-}
-
-.navbar.scrolled {
-    border-color: var(--line);
-    box-shadow: 0 8px 25px rgba(23, 33, 31, 0.06);
-}
-
-.nav-container,
 .footer-content {
     display: flex;
     align-items: center;
@@ -60,37 +43,6 @@
     color: var(--green);
 }
 
-.nav-links {
-    display: flex;
-    gap: 30px;
-    color: var(--muted);
-    font-size: 0.9rem;
-}
-
-.nav-links a,
-.nav-button,
-.threat-card a {
-    transition: color 0.2s ease, transform 0.2s ease;
-}
-
-.nav-links a:hover,
-.threat-card a:hover {
-    color: var(--green);
-}
-
-.nav-button {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    padding: 11px 17px;
-    color: var(--white);
-    background: var(--ink);
-    border-radius: 9px;
-    font-size: 0.82rem;
-    font-weight: 600;
-}
-
-.nav-button:hover,
 .btn:hover {
     transform: translateY(-2px);
 }
@@ -292,14 +244,18 @@ h2 span {
 
 .url {
     flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 5px;
     overflow: hidden;
     color: var(--muted);
     font-size: 0.68rem;
     white-space: nowrap;
 }
 
-.url span {
+.url .url-danger {
     color: var(--red);
+    font-weight: 700;
 }
 
 .menu {
@@ -594,9 +550,20 @@ h2 span {
 .purple-card { border-color: var(--purple); }
 
 .threat-icon {
-    margin-bottom: 22px;
-    font-size: 1.8rem;
+    width: 48px;
+    height: 48px;
+    display: grid;
+    place-items: center;
+    border-radius: 13px;
+    margin-bottom: 20px;
+    background: #eef6f1;
+    color: var(--green-dark);
 }
+
+.red-card .threat-icon { background: #fef2f2; color: var(--red); }
+.orange-card .threat-icon { background: #fff7ed; color: var(--orange); }
+.yellow-card .threat-icon { background: #fefce8; color: #ca8a04; }
+.purple-card .threat-icon { background: #f5f3ff; color: var(--purple); }
 
 .number {
     position: absolute;
@@ -906,19 +873,6 @@ footer .logo-icon {
         width: min(100% - 30px, 1120px);
     }
 
-    .navbar {
-        padding: 12px 0;
-    }
-
-    .nav-links {
-        display: none;
-    }
-
-    .nav-button {
-        padding: 9px 12px;
-        font-size: 0.7rem;
-    }
-
     h1 {
         font-size: clamp(2.7rem, 15vw, 4.3rem);
     }
@@ -1024,60 +978,21 @@ footer .logo-icon {
     cursor: pointer;
 }
 
-.nav-link-item {
-    background: transparent;
-    color: inherit;
-    font-size: inherit;
-    font-weight: inherit;
-    padding: 0;
-    cursor: pointer;
-    transition: color 0.2s ease;
-}
-
-.nav-link-item:hover {
-    color: var(--green);
-}
-
-.nav-actions {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-}
-
-.nav-secondary-link {
-    font-size: 0.85rem;
-    font-weight: 700;
-    color: var(--ink);
-    padding: 8px 12px;
-    border-radius: 8px;
-    transition: background 0.2s ease;
-}
-
-.nav-secondary-link:hover {
-    background: rgba(23, 33, 31, 0.06);
-}
-
 .fake-link {
     border: 0;
     cursor: pointer;
 }
 
-.card-action {
+.card-clue {
     display: inline-flex;
     align-items: center;
-    gap: 10px;
-    background: transparent;
-    padding: 0;
-    color: var(--green-dark);
-    font-size: 0.82rem;
+    gap: 7px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    background: #eef4f0;
+    color: #3f524b;
+    font-size: 0.74rem;
     font-weight: 700;
-    cursor: pointer;
-    transition: color 0.2s ease, transform 0.2s ease;
-}
-
-.card-action:hover {
-    color: var(--green);
-    transform: translateX(3px);
 }
 
 .demo-badge {
@@ -1165,8 +1080,31 @@ footer .logo-icon {
 }
 
 .demo-feedback strong {
-    display: block;
+    display: flex;
+    align-items: center;
+    gap: 6px;
     margin-bottom: 4px;
+}
+
+.hint {
+    align-items: flex-start;
+}
+
+.hint-svg {
+    color: #b45309;
+    margin-top: 2px;
+}
+
+.game-info {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.game-info > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
 }
 
 .demo-feedback p {
@@ -1193,4 +1131,15 @@ footer .logo-icon {
 
 .footer-logo {
     color: var(--white);
+}
+
+
+.hero-alert-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.hero-warn-icon {
+    color: var(--orange);
 }

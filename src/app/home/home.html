@@ -1,41 +1,7 @@
 <!-- =========================
-     NAVBAR
+     SHARED PUBLIC NAVBAR
 ========================== -->
-<header class="navbar" [class.scrolled]="scrolled()">
-  <div class="container nav-container">
-    <button type="button" class="logo logo-btn" (click)="scrollTo('inicio')">
-      <span class="logo-icon">C</span>
-      <span>Clickable<span class="green">.</span></span>
-    </button>
-
-    <nav class="nav-links" aria-label="Secciones principales">
-      <button type="button" class="nav-link-item" (click)="scrollTo('amenazas')">Amenazas</button>
-      <button type="button" class="nav-link-item" (click)="scrollTo('aprende')">Aprende</button>
-      <button type="button" class="nav-link-item" (click)="openGlossary('all')">Glosario</button>
-      @if (auth.isAuthenticated()) {
-        <a routerLink="/profile">Mi Perfil</a>
-      } @else {
-        <a routerLink="/login">Iniciar sesión</a>
-        <a routerLink="/register">Crear cuenta</a>
-      }
-    </nav>
-
-    <div class="nav-actions">
-      @if (auth.isAuthenticated()) {
-        <a routerLink="/profile" class="nav-button">
-          Hola, {{ auth.currentUser()?.firstName }} · Ir al perfil
-          <span>→</span>
-        </a>
-      } @else {
-        <a routerLink="/login" class="nav-secondary-link">Entrar</a>
-        <a routerLink="/game/modulo-1" class="nav-button">
-          Pon a prueba tu clic
-          <span>→</span>
-        </a>
-      }
-    </div>
-  </div>
-</header>
+<app-public-nav activePage="home" [scrolled]="scrolled()" />
 
 <main>
   <!-- =========================
@@ -63,14 +29,14 @@
         <div class="hero-buttons">
           @if (auth.isAuthenticated()) {
             <a routerLink="/profile" class="btn primary">
-              Continuar en mi perfil
-              <span>→</span>
+              Ir a mi perfil
+              <span class="material-symbols-rounded sm">arrow_forward</span>
             </a>
           } @else {
-            <a routerLink="/login" class="btn primary">
-              Iniciar sesión y entrenar
-              <span>→</span>
-            </a>
+            <button type="button" class="btn primary" (click)="scrollTo('juego')">
+              Probar simulador
+              <span class="material-symbols-rounded sm">arrow_forward</span>
+            </button>
           }
 
           <button type="button" class="btn secondary" (click)="scrollTo('amenazas')">
@@ -111,7 +77,8 @@
             </div>
 
             <div class="url">
-              🔒 secure-account-check<span>.com</span>
+              <span class="material-symbols-rounded sm">lock</span>
+              secure-account-check<span class="url-danger">.com</span>
             </div>
 
             <div class="menu">•••</div>
@@ -133,19 +100,24 @@
                 <small class="time">Ahora</small>
               </div>
 
-              <h3>⚠ Tu cuenta será suspendida</h3>
+              <h3 class="hero-alert-title">
+                <span class="material-symbols-rounded sm hero-warn-icon">warning</span>
+                Tu cuenta será suspendida
+              </h3>
               <p>
                 Detectamos una actividad inusual. Verifica tus datos inmediatamente para evitar el bloqueo de tu cuenta.
               </p>
 
               <button type="button" class="fake-link" (click)="scrollTo('juego')">
                 Verificar mi cuenta
-                <strong>↗</strong>
+                <span class="material-symbols-rounded sm">north_east</span>
               </button>
             </div>
 
             <div class="analysis">
-              <div class="analysis-icon">✓</div>
+              <div class="analysis-icon">
+                <span class="material-symbols-rounded sm">check</span>
+              </div>
               <div>
                 <strong>¿Lo detectaste?</strong>
                 <small>Urgencia + dominio extraño + solicitud de datos</small>
@@ -156,7 +128,9 @@
         </div>
 
         <div class="floating-card risk-card">
-          <div class="floating-icon red">!</div>
+          <div class="floating-icon red">
+            <span class="material-symbols-rounded sm">priority_high</span>
+          </div>
           <div>
             <strong>Phishing</strong>
             <small>Alta probabilidad</small>
@@ -164,7 +138,9 @@
         </div>
 
         <div class="floating-card safe-card">
-          <div class="floating-icon green-icon">✓</div>
+          <div class="floating-icon green-icon">
+            <span class="material-symbols-rounded sm">verified_user</span>
+          </div>
           <div>
             <strong>Piensa antes</strong>
             <small>Tu mejor defensa</small>
@@ -223,51 +199,63 @@
 
       <div class="threat-grid">
         <article class="threat-card red-card">
-          <div class="threat-icon">🎣</div>
+          <div class="threat-icon">
+            <span class="material-symbols-rounded md">phishing</span>
+          </div>
           <span class="number">01</span>
           <h3>Phishing</h3>
           <p>
             Mensajes que imitan a personas o empresas para robar tus credenciales o información.
           </p>
-          <button type="button" class="card-action" (click)="openGlossary('phishing', 'phishing')">
-            ¿Qué es y señales? <span>→</span>
-          </button>
+          <span class="card-clue">
+            <span class="material-symbols-rounded xs">alternate_email</span>
+            Revisa el dominio tras el &#64;
+          </span>
         </article>
 
         <article class="threat-card orange-card">
-          <div class="threat-icon">🦠</div>
+          <div class="threat-icon">
+            <span class="material-symbols-rounded md">bug_report</span>
+          </div>
           <span class="number">02</span>
           <h3>Malware</h3>
           <p>
             Archivos, enlaces o programas que pueden introducir software dañino en tu dispositivo.
           </p>
-          <button type="button" class="card-action" (click)="openGlossary('web', 'malware-doble-extension')">
-            Cómo evitarlo <span>→</span>
-          </button>
+          <span class="card-clue">
+            <span class="material-symbols-rounded xs">description</span>
+            Cuidado con archivos .pdf.exe
+          </span>
         </article>
 
         <article class="threat-card yellow-card">
-          <div class="threat-icon">👀</div>
+          <div class="threat-icon">
+            <span class="material-symbols-rounded md">psychology</span>
+          </div>
           <span class="number">03</span>
           <h3>Ingeniería Social</h3>
           <p>
             Contenido exagerado o premios urgentes diseñados para conseguir que hagas clic sin pensar.
           </p>
-          <button type="button" class="card-action" (click)="openGlossary('phishing', 'ingenieria-social')">
-            Detectar engaños <span>→</span>
-          </button>
+          <span class="card-clue">
+            <span class="material-symbols-rounded xs">schedule</span>
+            Desconfía de la falsa urgencia
+          </span>
         </article>
 
         <article class="threat-card purple-card">
-          <div class="threat-icon">QR</div>
+          <div class="threat-icon">
+            <span class="material-symbols-rounded md">qr_code_2</span>
+          </div>
           <span class="number">04</span>
           <h3>QR malicioso</h3>
           <p>
             Un código QR alterado puede llevarte a una página falsa o desviar pagos aunque parezca legítimo.
           </p>
-          <button type="button" class="card-action" (click)="openGlossary('fraud', 'qrishing-fraudes')">
-            Revisar un QR <span>→</span>
-          </button>
+          <span class="card-clue">
+            <span class="material-symbols-rounded xs">storefront</span>
+            Verifica el receptor del pago
+          </span>
         </article>
       </div>
     </div>
@@ -309,7 +297,9 @@
           </div>
 
           <div class="signal">
-            <span class="signal-symbol safe">✓</span>
+            <span class="signal-symbol safe">
+              <span class="material-symbols-rounded sm">check</span>
+            </span>
             <div>
               <strong>Enlace no verificado</strong>
               <small>No hagas clic todavía</small>
@@ -375,25 +365,26 @@
           </p>
 
           <div class="game-info">
-            <span>● 4 módulos completos</span>
-            <span>● Simulador realista + ayuda</span>
+            <span><span class="material-symbols-rounded sm">shield</span> 8 módulos progresivos</span>
+            <span><span class="material-symbols-rounded sm">sports_esports</span> Simulador interactivo paso a paso</span>
           </div>
 
-          <div class="hero-buttons">
-            <a class="btn primary" [routerLink]="auth.isAuthenticated() ? '/game/modulo-1' : '/login'">
-              {{ auth.isAuthenticated() ? 'Ir a los módulos' : 'Entrar y jugar ahora' }}
-              <span>→</span>
-            </a>
-            <button type="button" class="btn secondary" (click)="openGlossary('all')">
-              Abrir Glosario 📚
-            </button>
-          </div>
+          @if (auth.isAuthenticated()) {
+            <div class="hero-buttons">
+              <a class="btn primary" routerLink="/profile">
+                Ir a mis módulos
+                <span class="material-symbols-rounded sm">arrow_forward</span>
+              </a>
+            </div>
+          }
         </div>
 
         <!-- SIMULACIÓN INTERACTIVA -->
         <div class="simulation">
           <div class="notification">
-            <div class="notification-icon">!</div>
+            <div class="notification-icon">
+              <span class="material-symbols-rounded sm">priority_high</span>
+            </div>
             <div>
               <strong>Prueba interactiva rápida</strong>
               <small>Toca cualquier parte sospechosa del correo ({{ inspectedSignals().length }}/3 detectadas)</small>
@@ -413,7 +404,7 @@
                 <strong>Banco Nacional</strong>
                 <small>soporte&#64;banco-seguro.co</small>
               </div>
-              <span class="tap-pill">{{ inspectedSignals().includes('sender') ? '✓ Detectado' : 'Analizar' }}</span>
+              <span class="tap-pill">{{ inspectedSignals().includes('sender') ? 'Detectado' : 'Analizar' }}</span>
             </button>
 
             <button
@@ -424,7 +415,7 @@
             >
               <h3>Detectamos un inicio de sesión inusual.</h3>
               <p>Confirma tu identidad ahora para evitar que tu cuenta sea bloqueada.</p>
-              <span class="tap-pill">{{ inspectedSignals().includes('urgency') ? '✓ Detectado' : 'Analizar texto' }}</span>
+              <span class="tap-pill">{{ inspectedSignals().includes('urgency') ? 'Detectado' : 'Analizar texto' }}</span>
             </button>
 
             <button
@@ -433,18 +424,22 @@
               [class.inspected]="inspectedSignals().includes('button')"
               (click)="inspectDemo('button')"
             >
-              Confirmar identidad →
+              Confirmar identidad
+              <span class="material-symbols-rounded sm">arrow_forward</span>
             </button>
           </div>
 
           @if (activeDemoSignal(); as sig) {
             <div class="demo-feedback">
-              <strong>🚨 ¡Bien visto! Analizaste: "{{ sig.label }}"</strong>
+              <strong>
+                <span class="material-symbols-rounded sm">gpp_maybe</span>
+                ¡Bien visto! Analizaste: "{{ sig.label }}"
+              </strong>
               <p>{{ sig.reason }}</p>
             </div>
           } @else {
             <div class="hint">
-              💡
+              <span class="material-symbols-rounded sm hint-svg">lightbulb</span>
               <span>
                 <strong>Pista:</strong>
                 Haz clic en el remitente, el texto o el botón rojo para ver por qué es un ataque de phishing.
@@ -472,10 +467,11 @@
       <div class="final-actions">
         <a [routerLink]="auth.isAuthenticated() ? '/profile' : '/register'" class="btn dark">
           {{ auth.isAuthenticated() ? 'Ir a mi perfil' : 'Crear cuenta gratis' }}
-          <span>→</span>
+          <span class="material-symbols-rounded sm">arrow_forward</span>
         </a>
         <button type="button" class="btn outline-light" (click)="scrollTo('inicio')">
-          Volver al inicio ↑
+          Volver al inicio
+          <span class="material-symbols-rounded sm">arrow_upward</span>
         </button>
       </div>
     </div>
@@ -492,10 +488,3 @@
     <span>© 2026 Clickable</span>
   </div>
 </footer>
-
-<app-help-glossary
-  [open]="glossaryOpen()"
-  [initialCategory]="glossaryCategory()"
-  [initialTermId]="glossaryTerm()"
-  (closed)="glossaryOpen.set(false)"
-/>

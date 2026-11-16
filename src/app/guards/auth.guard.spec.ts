@@ -1,9 +1,10 @@
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRouteSnapshot, Router, RouterStateSnapshot, UrlTree, provideRouter } from '@angular/router';
 import { AuthService, FIREBASE_CONFIG } from '../services/auth.service';
-import { authGuard } from './auth.guard';
+import { ProgressService } from '../services/progress.service';
+import { authGuard, moduleUnlockGuard } from './auth.guard';
 
-describe('authGuard', () => {
+describe('authGuard & moduleUnlockGuard', () => {
   beforeEach(() => {
     localStorage.clear();
     sessionStorage.clear();
@@ -37,5 +38,39 @@ describe('authGuard', () => {
     );
 
     expect(result).toBe(true);
+  });
+
+  it('blocks locked module and allows after previous module completion', async () => {
+    const auth = TestBed.inject(AuthService);
+    await auth.waitForAuthInit();
+    await auth.registerWithEmail({
+      firstName: 'Luis',
+      lastName: 'Diaz',
+      email: 'luis@example.com',
+      password: 'Password123!',
+    });
+
+    const router = TestBed.inject(Router);
+    const blocked = await TestBed.runInInjectionContext(() =>
+      moduleUnlockGuard(
+        { data: { moduleId: 'navegacion' } } as unknown as ActivatedRouteSnapshot,
+        { url: '/game/modulo-2' } as RouterStateSnapshot
+      )
+    );
+
+    expect(blocked instanceof UrlTree).toBe(true);
+    expect(router.serializeUrl(blocked as UrlTree)).toBe('/profile?locked=navegacion');
+
+    const progress = TestBed.inject(ProgressService);
+    progress.recordModuleCompletion('phishing', 60, 3, 5);
+
+    const allowed = await TestBed.runInInjectionContext(() =>
+      moduleUnlockGuard(
+        { data: { moduleId: 'navegacion' } } as unknown as ActivatedRouteSnapshot,
+        { url: '/game/modulo-2' } as RouterStateSnapshot
+      )
+    );
+
+    expect(allowed).toBe(true);
   });
 });

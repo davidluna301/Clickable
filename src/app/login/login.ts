@@ -2,11 +2,12 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../services/auth.service';
+import { PublicNav } from '../shared/public-nav/public-nav';
 
 type AuthMode = 'login' | 'register' | 'forgot';
 
 @Component({
-  imports: [RouterLink, FormsModule],
+  imports: [RouterLink, FormsModule, PublicNav],
   selector: 'app-login',
   styleUrl: './login.css',
   templateUrl: './login.html',
@@ -141,7 +142,7 @@ export class Login {
     this.loading.set(true);
     try {
       await this.auth.registerWithEmail({ firstName, lastName, email, password });
-      await this.navigateAfterAuth(true);
+      await this.navigateAfterAuth();
     } catch (err) {
       this.errorMsg.set((err as Error).message || 'No se pudo completar el registro.');
     } finally {
@@ -185,9 +186,8 @@ export class Login {
     }
   }
 
-  private async navigateAfterAuth(isNewRegistration = false) {
-    const target = isNewRegistration ? '/profile' : this.returnUrl() || '/profile';
-    await this.router.navigateByUrl(target);
+  private async navigateAfterAuth() {
+    await this.router.navigateByUrl('/profile');
   }
 
   private isValidEmail(email: string): boolean {

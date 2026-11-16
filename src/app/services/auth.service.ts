@@ -103,14 +103,29 @@ export class AuthService {
 
         return new Promise<void>((resolve) => {
           let resolved = false;
-          onAuthStateChanged(this.firebaseAuth!, (fbUser) => {
-            this.currentUser.set(fbUser ? this.mapFirebaseUser(fbUser) : null);
+          const finish = () => {
             this.authReady.set(true);
             if (!resolved) {
               resolved = true;
               resolve();
             }
-          });
+          };
+
+          const safetyTimer = setTimeout(finish, 3500);
+
+          onAuthStateChanged(
+            this.firebaseAuth!,
+            (fbUser) => {
+              clearTimeout(safetyTimer);
+              this.currentUser.set(fbUser ? this.mapFirebaseUser(fbUser) : null);
+              finish();
+            },
+            () => {
+              clearTimeout(safetyTimer);
+              this.currentUser.set(null);
+              finish();
+            }
+          );
         });
       } catch (err) {
         console.warn('Error iniciando Firebase Auth, cambiando a sesión local temporal:', err);
@@ -330,7 +345,7 @@ export class AuthService {
       case 'auth/configuration-not-found':
         return 'Falta activar Firebase Authentication en la consola de Firebase: entra a Build → Authentication → "Comenzar" (Get started) y habilita Correo/Contraseña y Google.';
       case 'auth/unauthorized-domain':
-        return 'Este dominio (localhost) no está autorizado en Firebase Console → Authentication → Settings → Authorized domains.';
+        return 'Este dominio (localhost o Vercel) no está autorizado en Firebase Console → Authentication → Settings → Authorized domains.';
       default:
         return (error as { message?: string })?.message || 'Ocurrió un error al autenticar. Intenta de nuevo.';
     }
