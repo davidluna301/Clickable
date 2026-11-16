@@ -495,6 +495,15 @@
 @if (showCertificateModal()) {
   <div class="cert-modal-overlay" (click)="showCertificateModal.set(false)">
     <div class="cert-card-dialog" (click)="$event.stopPropagation()">
+      <button
+        type="button"
+        class="cert-modal-x no-print"
+        (click)="showCertificateModal.set(false)"
+        aria-label="Cerrar ventana"
+        title="Cerrar reconocimiento"
+      >
+        <span class="material-symbols-rounded sm">close</span>
+      </button>
       <div class="cert-border-outer">
         <div class="cert-border-inner">
           <div class="cert-watermark">UCC</div>
