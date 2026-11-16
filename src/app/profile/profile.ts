@@ -1,11 +1,13 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../services/auth.service';
+import { ClassroomService } from '../services/classroom.service';
 import { ModuleProgress, ProgressService } from '../services/progress.service';
 import { HelpGlossary } from '../shared/help-glossary/help-glossary';
 
 @Component({
-  imports: [RouterLink, HelpGlossary],
+  imports: [RouterLink, FormsModule, HelpGlossary],
   selector: 'app-profile',
   styleUrl: './profile.css',
   templateUrl: './profile.html',
@@ -13,6 +15,7 @@ import { HelpGlossary } from '../shared/help-glossary/help-glossary';
 export class Profile implements OnInit {
   auth = inject(AuthService);
   progress = inject(ProgressService);
+  classroom = inject(ClassroomService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
 
@@ -22,6 +25,10 @@ export class Profile implements OnInit {
   lockedAlert = signal<{ moduleName: string; requiredOrder: number } | null>(null);
   lockedShakeId = signal<string | null>(null);
   showCertificateModal = signal(false);
+
+  classCodeInput = signal('');
+  classJoinMessage = signal<{ success: boolean; text: string } | null>(null);
+  showChangeClass = signal(false);
 
   todayFormatted = new Date().toLocaleDateString('es-CO', {
     year: 'numeric',
@@ -95,6 +102,21 @@ export class Profile implements OnInit {
   async logout() {
     await this.auth.logout();
     await this.router.navigateByUrl('/login');
+  }
+
+  joinClassFromProfile() {
+    const code = this.classCodeInput().trim();
+    if (!code) return;
+    const res = this.classroom.joinClassroom(code);
+    this.classJoinMessage.set({
+      success: res.success,
+      text: res.message,
+    });
+    if (res.success) {
+      setTimeout(() => {
+        this.showChangeClass.set(false);
+      }, 1500);
+    }
   }
 
   printCertificate() {

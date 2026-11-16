@@ -2,6 +2,7 @@ import { computed, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { AuthService, AuthUser } from '../services/auth.service';
+import { ClassroomService } from '../services/classroom.service';
 import { ActivityLog, ModuleProgress, ProgressService } from '../services/progress.service';
 import { Profile } from './profile';
 
@@ -94,6 +95,21 @@ describe('Profile', () => {
     resetProgress: () => undefined,
   };
 
+  const classroomStub = {
+    activeClassroom: signal({
+      code: 'ELECTIVA-6A-UCC',
+      name: 'Grupo 6A - Ingeniería de Sistemas',
+      subject: 'Electiva de Seguridad Informática',
+      institution: 'Universidad Cooperativa de Colombia (UCC)',
+      teacherName: 'Prof. Ivonne Barco',
+      teacherEmail: 'ivonne.barco@campusucc.edu.co',
+      createdAt: '2026-10-15',
+      students: [],
+    }).asReadonly(),
+    joinedClassCode: signal('ELECTIVA-6A-UCC').asReadonly(),
+    joinClassroom: () => ({ success: true, message: 'Unido' }),
+  };
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [Profile],
@@ -101,6 +117,7 @@ describe('Profile', () => {
         provideRouter([]),
         { provide: AuthService, useValue: authStub },
         { provide: ProgressService, useValue: progressStub },
+        { provide: ClassroomService, useValue: classroomStub },
       ],
     }).compileComponents();
   });
