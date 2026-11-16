@@ -1,14 +1,14 @@
 import { Component, inject, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
-import { ProgressService } from '../../services/progress.service';
+import { ProgressService, SavedModuleCheckpoint } from '../../services/progress.service';
 import { HelpGlossary } from '../../shared/help-glossary/help-glossary';
-import { GameBoard } from '../shared/game-board';
+import { GameBoard, ModuleAttemptResult, ModuleCompletionResult } from '../shared/game-board';
+import { ModuleIntro } from '../shared/module-intro/module-intro';
 import { MODULO_4 } from './modulo-4.data';
 
 @Component({
   selector: 'app-modulo-4',
   standalone: true,
-  imports: [GameBoard, RouterLink, HelpGlossary],
+  imports: [GameBoard, ModuleIntro, HelpGlossary],
   templateUrl: './modulo-4.html',
   styleUrl: './modulo-4.css',
 })
@@ -17,12 +17,37 @@ export class Modulo4 {
   data = MODULO_4;
   started = signal(false);
   glossaryOpen = signal(false);
+  activeCheckpoint = signal<SavedModuleCheckpoint | null>(
+    this.progressService.getModuleCheckpoint(this.data.id)
+  );
 
-  onFinished(r: { xp: number; lives: number }) {
-    this.progressService.recordModuleCompletion(this.data.id, r.xp, r.lives);
+  startFresh() {
+    this.progressService.clearModuleCheckpoint(this.data.id);
+    this.activeCheckpoint.set(null);
+    this.started.set(true);
   }
 
-  onAttempted(r: { xp: number }) {
-    this.progressService.recordModuleAttempt(this.data.id, r.xp);
+  resumeOrStart() {
+    this.activeCheckpoint.set(this.progressService.getModuleCheckpoint(this.data.id));
+    this.started.set(true);
+  }
+
+  onCheckpoint(cp: SavedModuleCheckpoint) {
+    this.progressService.saveModuleCheckpoint(this.data.id, cp);
+  }
+
+  onRestart() {
+    this.progressService.clearModuleCheckpoint(this.data.id);
+    this.activeCheckpoint.set(null);
+  }
+
+  onFinished(r: ModuleCompletionResult) {
+    this.progressService.recordModuleCompletion(this.data.id, r.xp, r.lives, r.threatsFound);
+    this.activeCheckpoint.set(null);
+  }
+
+  onAttempted(r: ModuleAttemptResult) {
+    this.progressService.recordModuleAttempt(this.data.id, r.xp, r.threatsFound);
+    this.activeCheckpoint.set(null);
   }
 }

@@ -3,7 +3,7 @@ import { GameModule } from '../shared/game.models';
 export const MODULO_1: GameModule = {
   id: 'phishing',
   title: 'Correos maliciosos',
-  icon: '📧',
+  icon: 'mail',
   description: 'Detecta phishing, suplantación de remitentes, enlaces falsos y adjuntos peligrosos.',
   nextRoute: '/game/modulo-2',
   nextTitle: 'Navegación segura',
@@ -38,7 +38,7 @@ export const MODULO_1: GameModule = {
         {
           id: 'subject',
           kind: 'subject',
-          text: '⚠️ Tu cuenta será suspendida',
+          text: 'Tu cuenta será suspendida',
           threat: true,
           category: 'Ingeniería Social · Miedo y urgencia',
           why: 'Usan amenazas de bloqueo inmediato para provocarte pánico y hacer que actúes rápido sin verificar.',
@@ -126,7 +126,7 @@ export const MODULO_1: GameModule = {
         {
           id: 'file',
           kind: 'file',
-          text: '📎 calendario_2026.pdf.exe',
+          text: 'calendario_2026.pdf.exe',
           threat: true,
           category: 'Malware · Doble extensión',
           why: '¡Trampa clásica! Parece un PDF, pero termina en ".exe". Al abrirlo no verás un documento: ejecutarás un programa malicioso en tu equipo.',
@@ -162,7 +162,7 @@ export const MODULO_1: GameModule = {
         {
           id: 'subject',
           kind: 'subject',
-          text: '🎁 ¡Ganaste una tarjeta de $500.000!',
+          text: '¡Ganaste una tarjeta de $500.000!',
           threat: true,
           category: 'Clickbait · Premio falso',
           why: 'Nadie regala tarjetas de dinero por un sorteo en el que jamás te inscribiste. Es un anzuelo para llamar tu atención.',

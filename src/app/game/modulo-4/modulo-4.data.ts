@@ -3,8 +3,10 @@ import { GameModule } from '../shared/game.models';
 export const MODULO_4: GameModule = {
   id: 'fraudes',
   title: 'Fraudes financieros digitales',
-  icon: '💸',
+  icon: 'payments',
   description: 'Aprende a evitar estafas en Nequi/Daviplata, códigos QR alterados, falsos asesores y comprobantes falsos.',
+  nextRoute: '/game/modulo-5',
+  nextTitle: 'Redes sociales e ingeniería social',
   glossaryCategory: 'fraud',
   tips: [
     'Un código OTP o una clave dinámica equivalen a tu dinero: nadie legítimo te los pide.',
@@ -98,7 +100,7 @@ export const MODULO_4: GameModule = {
         {
           id: 'qr',
           kind: 'qr',
-          text: '▦ QR con el borde de un sticker pegado encima',
+          text: 'QR con el borde de un sticker pegado encima',
           threat: true,
           category: 'QRishing · QR alterado físicamente',
           why: '¡Cuidado! Los delincuentes pegan su propio sticker QR encima del código del local para desviar todos los pagos de los clientes a su cuenta.',

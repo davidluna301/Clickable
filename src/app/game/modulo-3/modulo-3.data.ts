@@ -3,7 +3,7 @@ import { GameModule } from '../shared/game.models';
 export const MODULO_3: GameModule = {
   id: 'celular',
   title: 'Seguridad en el celular',
-  icon: '📱',
+  icon: 'smartphone',
   description: 'Detecta smishing por SMS, aplicaciones falsas (.apk), permisos abusivos y señales de SIM swapping.',
   nextRoute: '/game/modulo-4',
   nextTitle: 'Fraudes financieros digitales',
@@ -87,7 +87,7 @@ export const MODULO_3: GameModule = {
         {
           id: 'name',
           kind: 'app',
-          text: 'WhatsApp Plus Gold ⭐',
+          text: 'WhatsApp Plus Gold',
           threat: true,
           category: 'App falsa / Clon no oficial',
           why: 'No existe ninguna versión "Plus" o "Gold" oficial de WhatsApp. Estas copias modificadas suelen incluir código espía y pueden causar el bloqueo de tu cuenta.',
