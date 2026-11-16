@@ -258,15 +258,50 @@
   cursor: pointer;
 }
 
+.tips-head-icon {
+  color: #14774f;
+}
+
+.how-to-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.search-icon {
+  color: #6b7b74;
+}
+
 .entry-icon {
   width: 40px;
   height: 40px;
   flex: 0 0 auto;
   border-radius: 12px;
   background: #edf6f1;
+  color: #14774f;
   display: grid;
   place-items: center;
-  font-size: 1.25rem;
+}
+
+.detail-block h4,
+.tips-block h4,
+.example-box strong {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.drawer-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 13px 22px;
+  background: #17211f;
+  color: #ccead9;
+  font-size: 0.76rem;
+  font-weight: 600;
+  text-align: center;
 }
 
 .entry-summary {
@@ -387,10 +422,10 @@
   background: #ffffff;
   border-radius: 14px;
   border: 1px dashed #ced9d3;
-}
-
-.empty-results span {
-  font-size: 1.8rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
 }
 
 .empty-results button {

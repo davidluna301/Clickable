@@ -3,14 +3,18 @@ export type GlossaryCategory =
   | 'phishing'
   | 'web'
   | 'mobile'
-  | 'fraud';
+  | 'fraud'
+  | 'social'
+  | 'network'
+  | 'ai'
+  | 'workspace';
 
 export interface GlossaryEntry {
   id: string;
   term: string;
   category: Exclude<GlossaryCategory, 'all'>;
   categoryLabel: string;
-  icon: string;
+  icon: string; // Google Fonts Material Symbol name
   tagline: string;
   definition: string;
   whyDangerous: string;
@@ -20,11 +24,15 @@ export interface GlossaryEntry {
 }
 
 export const GLOSSARY_CATEGORIES: { id: GlossaryCategory; label: string; icon: string }[] = [
-  { id: 'all', label: 'Todos', icon: '📚' },
-  { id: 'phishing', label: 'Phishing y Correos', icon: '🎣' },
-  { id: 'web', label: 'Web y Descargas', icon: '🌐' },
-  { id: 'mobile', label: 'Celular y SMS', icon: '📱' },
-  { id: 'fraud', label: 'Fraudes y Pagos', icon: '💸' },
+  { id: 'all', label: 'Todos', icon: 'menu_book' },
+  { id: 'phishing', label: 'Phishing y Correos', icon: 'phishing' },
+  { id: 'web', label: 'Web y Descargas', icon: 'public' },
+  { id: 'mobile', label: 'Celular y SMS', icon: 'smartphone' },
+  { id: 'fraud', label: 'Fraudes y Pagos', icon: 'payments' },
+  { id: 'social', label: 'Redes Sociales', icon: 'diversity_1' },
+  { id: 'network', label: 'Wi-Fi y Redes', icon: 'wifi' },
+  { id: 'ai', label: 'Inteligencia Artificial', icon: 'psychology' },
+  { id: 'workspace', label: 'Entorno Laboral & MFA', icon: 'apartment' },
 ];
 
 export const GLOSSARY_ENTRIES: GlossaryEntry[] = [
@@ -33,7 +41,7 @@ export const GLOSSARY_ENTRIES: GlossaryEntry[] = [
     term: '¿Qué es el Phishing?',
     category: 'phishing',
     categoryLabel: 'Phishing',
-    icon: '🎣',
+    icon: 'phishing',
     tagline: 'Suplantación de identidad por correo o mensajes',
     definition:
       'El phishing ("pesca" de datos) ocurre cuando un atacante se hace pasar por una empresa, banco, universidad o persona de confianza para engañarte y hacer que entregues tus contraseñas, códigos o datos bancarios.',
@@ -52,7 +60,7 @@ export const GLOSSARY_ENTRIES: GlossaryEntry[] = [
     term: 'Ingeniería Social y Urgencia',
     category: 'phishing',
     categoryLabel: 'Manipulación',
-    icon: '⏰',
+    icon: 'schedule',
     tagline: 'Miedo, premios falsos y presión de tiempo',
     definition:
       'Es la técnica psicológica de provocar una emoción fuerte (pánico, miedo a perder dinero, o emoción por un premio sorpresa) para que actúes rápido sin detenerte a revisar detalles.',
@@ -70,7 +78,7 @@ export const GLOSSARY_ENTRIES: GlossaryEntry[] = [
     term: 'Enlaces Acortados y Ocultos',
     category: 'phishing',
     categoryLabel: 'Enlaces',
-    icon: '🔗',
+    icon: 'link',
     tagline: 'URLs disfrazadas que esconden su destino real',
     definition:
       'Son direcciones cortas (como bit.ly o tinyurl) o botones llamativos cuyo destino real no coincide con el sitio oficial de la marca que dicen representar.',
@@ -88,7 +96,7 @@ export const GLOSSARY_ENTRIES: GlossaryEntry[] = [
     term: 'Typosquatting (Dominios Imitadores)',
     category: 'web',
     categoryLabel: 'Web',
-    icon: '🔍',
+    icon: 'manage_search',
     tagline: 'Letras cambiadas que parecen iguales a simple vista',
     definition:
       'Consiste en registrar direcciones web casi idénticas a las reales cambiando una letra o usando caracteres similares, como reemplazar una "i" por una "l" o una "o" por un "0".',
@@ -106,14 +114,14 @@ export const GLOSSARY_ENTRIES: GlossaryEntry[] = [
     term: 'El Mito del Candado HTTPS',
     category: 'web',
     categoryLabel: 'Web',
-    icon: '🔒',
+    icon: 'lock',
     tagline: 'Cifrado no significa que el sitio sea honesto',
     definition:
       'El candado (HTTPS) indica que la comunicación entre tu navegador y el servidor viaja cifrada, pero cualquier estafador puede obtener un certificado HTTPS gratuito para su página falsa.',
     whyDangerous:
       'Mucha gente confía ciegamente porque ve el candado verde o gris, sin revisar si el dominio es legítimo.',
-    badExample: '🔒 https://convertir-videos-gratis-ya.xyz (tiene candado, pero el dominio es sospechoso)',
-    goodExample: '🔒 https://www.ucc.edu.co (candado + dominio oficial verificado)',
+    badExample: 'https://convertir-videos-gratis-ya.xyz (tiene candado, pero el dominio es sospechoso)',
+    goodExample: 'https://www.ucc.edu.co (candado + dominio oficial verificado)',
     tips: [
       'El candado verifica cómo viajan los datos, NO quién es el dueño del sitio.',
       'Fíjate siempre en el dominio principal antes de la primera barra "/".',
@@ -124,17 +132,17 @@ export const GLOSSARY_ENTRIES: GlossaryEntry[] = [
     term: 'Malware y Doble Extensión',
     category: 'web',
     categoryLabel: 'Malware',
-    icon: '🦠',
+    icon: 'bug_report',
     tagline: 'Programas dañinos disfrazados de documentos',
     definition:
       'El malware es software malicioso (virus, troyanos, spyware, ransomware) diseñado para espiar, dañar o secuestrar tu equipo. Muchas veces se disfraza con doble extensión o botones falsos de descarga.',
     whyDangerous:
       'Si abres un archivo como "calendario.pdf.exe" o instalas una app desde un botón falso, ejecutas un programa que puede robar contraseñas guardadas o cifrar tus archivos.',
-    badExample: '📎 calendario_2026.pdf.exe  |  Botón gigante "⬇ DESCARGAR AHORA (100% sin virus)"',
-    goodExample: '📎 calendario_2026.pdf (desde portal institucional oficial)',
+    badExample: 'Archivo: calendario_2026.pdf.exe  |  Botón gigante "DESCARGAR AHORA (100% sin virus)"',
+    goodExample: 'Archivo: calendario_2026.pdf (desde portal institucional oficial)',
     tips: [
       'Mira siempre los últimos caracteres después del último punto (.exe, .bat, .scr, .apk son ejecutables).',
-      'Desconfía de páginas llenas de anuncios con múltiples botones verdes de "Download".',
+      'Desconfía de páginas llenas de anuncios con múltiples botones llamativos de "Download".',
     ],
   },
   {
@@ -142,7 +150,7 @@ export const GLOSSARY_ENTRIES: GlossaryEntry[] = [
     term: 'Smishing y SIM Swapping',
     category: 'mobile',
     categoryLabel: 'Celular y SMS',
-    icon: '📱',
+    icon: 'smartphone',
     tagline: 'Phishing por SMS y robo de tu línea telefónica',
     definition:
       'El Smishing es phishing enviado por mensajes de texto (SMS). El SIM Swapping ocurre cuando un atacante convence a tu operador o usa tus códigos SMS para transferir tu número a su propia tarjeta SIM.',
@@ -160,7 +168,7 @@ export const GLOSSARY_ENTRIES: GlossaryEntry[] = [
     term: 'Apps Falsas y Permisos Abusivos',
     category: 'mobile',
     categoryLabel: 'Celular y Apps',
-    icon: '🔐',
+    icon: 'admin_panel_settings',
     tagline: 'Apps fuera de tienda oficial o que piden más de la cuenta',
     definition:
       'Aplicaciones clonadas (como "WhatsApp Plus Gold") descargadas en archivos .apk externos, o apps y extensiones simples que solicitan acceso a tus SMS, contactos o toda tu navegación.',
@@ -178,7 +186,7 @@ export const GLOSSARY_ENTRIES: GlossaryEntry[] = [
     term: 'QRishing, Vishing y Comprobantes Falsos',
     category: 'fraud',
     categoryLabel: 'Fraudes Financieros',
-    icon: '💸',
+    icon: 'qr_code_scanner',
     tagline: 'QR alterados, falsos asesores y pagos inventados',
     definition:
       'Engaños enfocados en robarte dinero directamente: pegar un sticker QR falso encima del de un comercio (QRishing), llamarte fingiendo ser del banco (Vishing), o enviarte capturas editadas de transferencias que nunca existieron.',
@@ -190,6 +198,82 @@ export const GLOSSARY_ENTRIES: GlossaryEntry[] = [
       'Al escanear un QR para pagar, verifica el nombre del destinatario antes de confirmar.',
       'Nunca aceptes capturas de pantalla como prueba de pago: verifica en los movimientos reales de tu app.',
       'Para recibir dinero por Nequi o Daviplata NUNCA necesitas dar códigos ni abrir enlaces externos.',
+    ],
+  },
+  {
+    id: 'redes-sociales-suplantacion',
+    term: 'Suplantación en Redes y Falsos Sorteos',
+    category: 'social',
+    categoryLabel: 'Redes Sociales',
+    icon: 'diversity_1',
+    tagline: 'Perfiles clonados, sorteos trampa y falsas ofertas laborales',
+    definition:
+      'Cuentas clonadas con nombres casi idénticos a los de tus amigos o marcas populares que envían mensajes directos (DM) prometiendo premios inexistentes o pidiendo transferencias de urgencia.',
+    whyDangerous:
+      'Aprovechan los lazos de confianza entre amigos y el deseo de recompensas fáciles para robar dinero o tomar el control de tus cuentas sociales.',
+    badExample: '@sorteos_apple_vip: "¡Ganaste un iPhone! Paga solo $35.000 de envío" · @amigo__: "Estoy varado, préstame $150.000"',
+    goodExample: 'Verificar por llamada telefónica directa antes de transferir y desconfiar de premios donde debes pagar por adelantado.',
+    tips: [
+      'Si un amigo te pide dinero por chat, llámalo a su número habitual para confirmar su identidad.',
+      'Ninguna marca oficial te pedirá dinero por adelantado para entregarte un premio legítimo.',
+      'Desconfía de ofertas de trabajo que prometan sumas desmedidas por ver videos o dar likes.',
+    ],
+  },
+  {
+    id: 'wifi-publico-evil-twin',
+    term: 'Redes Wi-Fi Abiertas y Evil Twin (Gemelo Malicioso)',
+    category: 'network',
+    categoryLabel: 'Wi-Fi y Conexiones',
+    icon: 'wifi',
+    tagline: 'Puntos de acceso falsos creados para espiar tu tráfico',
+    definition:
+      'Un atacante monta una red inalámbrica con un nombre similar al de un lugar público (aeropuerto, café, centro comercial) sin contraseña. Todo el tráfico que pase por esa red puede ser interceptado o redirigido a páginas falsas.',
+    whyDangerous:
+      'Pueden capturar contraseñas no cifradas, inyectar publicidad maliciosa o exigir la instalación de certificados fraudulentos en tu teléfono.',
+    badExample: 'Conectarse a "Aeropuerto_WiFi_Gratis" abierta y aceptar instalar un "certificado de seguridad".',
+    goodExample: 'Usar tus datos móviles o una VPN confiable cuando estés en lugares públicos concurridos.',
+    tips: [
+      'Evita realizar transacciones bancarias o ingresar contraseñas sensibles conectado a Wi-Fi públicas abiertas.',
+      'Nunca instales archivos ni certificados para poder "conectarte gratis".',
+      'Desactiva la opción de conectarse automáticamente a redes Wi-Fi abiertas en tu móvil.',
+    ],
+  },
+  {
+    id: 'deepfakes-ia-vishing',
+    term: 'Inteligencia Artificial: Deepfakes y Clonación de Voz',
+    category: 'ai',
+    categoryLabel: 'Inteligencia Artificial',
+    icon: 'psychology',
+    tagline: 'Audios sintetizados y videos manipulados para estafar',
+    definition:
+      'El uso de modelos generativos de IA para clonar la voz de un familiar o el rostro de una persona pública con el fin de realizar extorsiones relámpago o promover inversiones fraudulentas.',
+    whyDangerous:
+      'El realismo de los audios y videos generados con pocos segundos de muestra puede engañar incluso a personas escépticas si no prestan atención a inconsistencias vocales.',
+    badExample: 'Nota de voz de un "familiar" con tono monótono diciendo que está en un retén y necesita dinero en un Nequi desconocido.',
+    goodExample: 'Hacer una pregunta personal que solo el familiar real sabría responder para validar su identidad.',
+    tips: [
+      'Establece una palabra clave familiar de seguridad para situaciones de emergencia económica.',
+      'Presta atención a artefactos: pausas antinaturales, ruidos metálicos y modismos que no correspondan a la persona.',
+      'Si recibes un mensaje de voz pidiendo dinero desde un número nuevo, contacta al número habitual antes de hacer nada.',
+    ],
+  },
+  {
+    id: 'mfa-fatigue-workspace',
+    term: 'MFA Fatigue y Amenazas en Entornos de Trabajo/Estudio',
+    category: 'workspace',
+    categoryLabel: 'Entorno Laboral & MFA',
+    icon: 'apartment',
+    tagline: 'Bombardeo de solicitudes de 2 pasos y falso soporte TI',
+    definition:
+      'Ataque donde el delincuente ya obtuvo tu contraseña y te envía decenas de notificaciones push de aprobación en la madrugada para que, por cansancio o error, toques "Aprobar" y le concedas acceso total.',
+    whyDangerous:
+      'Anula la protección del doble factor de autenticación y compromete el correo institucional, documentos académicos y cuentas de la empresa.',
+    badExample: 'Aprobar una notificación de Microsoft Authenticator a las 3:00 AM creyendo que es una actualización.',
+    goodExample: 'Rechazar la notificación y cambiar de inmediato la contraseña institucional.',
+    tips: [
+      'Nunca apruebes una notificación de autenticación que tú no hayas provocado.',
+      'Si recibes solicitudes repetitivas, reporta al equipo de TI o cambia tu clave de inmediato.',
+      'Desconfía de correos de "Soporte TI" que amenacen con cerrar tu buzón si no validas tu clave en un link externo.',
     ],
   },
 ];

@@ -8,7 +8,7 @@
         <h2>Ayuda y Glosario</h2>
       </div>
       <button type="button" class="close-btn" (click)="close()" aria-label="Cerrar panel de ayuda">
-        ✕
+        <span class="material-symbols-rounded sm">close</span>
       </button>
     </header>
 
@@ -16,10 +16,10 @@
       @if (moduleTips().length > 0) {
         <section class="module-help-box">
           <div class="module-help-head">
-            <span>💡</span>
+            <span class="material-symbols-rounded md tips-head-icon">lightbulb</span>
             <div>
               <strong>Pistas para {{ moduleTitle() || 'este módulo' }}</strong>
-              <small>Úsalas para identificar las señales sin adivinar</small>
+              <small>Úsalas para identificar las señales dentro del simulador</small>
             </div>
           </div>
           <ul>
@@ -32,22 +32,25 @@
 
       <div class="how-to-box">
         <button type="button" class="how-to-toggle" (click)="showHowToPlay.set(!showHowToPlay())">
-          <span>🎮 ¿Cómo se juega este desafío?</span>
+          <span class="how-to-label">
+            <span class="material-symbols-rounded sm">sports_esports</span>
+            ¿Cómo se juega en el simulador?
+          </span>
           <b>{{ showHowToPlay() ? 'Ocultar' : 'Ver guía' }}</b>
         </button>
 
         @if (showHowToPlay()) {
           <ol class="how-to-steps">
-            <li><strong>Observa el escenario:</strong> revisa remitente, URL, asunto, botones y permisos como en la vida real.</li>
-            <li><strong>Toca solo lo sospechoso:</strong> cada señal correcta suma <strong>+10 XP</strong> y te explica qué tipo de amenaza es.</li>
-            <li><strong>Cuidado con las falsas alarmas:</strong> si tocas un elemento legítimo pierdes 1 vida, pero te explicamos por qué es seguro.</li>
-            <li><strong>Confirma tu análisis:</strong> cuando creas que no quedan amenazas (o si el sitio es 100% seguro), pulsa <em>Confirmar análisis</em>.</li>
+            <li><strong>Observa el simulador:</strong> revisa el remitente, asunto, URL, permisos, botones o mensajes como en una app real.</li>
+            <li><strong>Toca solo lo sospechoso:</strong> cada señal peligrosa detectada suma <strong>+10 XP</strong> y te explica por qué está mal.</li>
+            <li><strong>Cuidado con los elementos sanos:</strong> si marcas algo que en realidad está bien, pierdes <strong>1 vida</strong> y te mostramos por qué es normal.</li>
+            <li><strong>Comprueba tu análisis:</strong> cuando hayas detectado todo lo sospechoso (o si el portal es 100% seguro), pulsa <em>Confirmar análisis</em>.</li>
           </ol>
         }
       </div>
 
       <div class="search-box">
-        <span class="search-icon">🔍</span>
+        <span class="material-symbols-rounded sm search-icon">search</span>
         <input
           type="search"
           [ngModel]="searchQuery()"
@@ -64,7 +67,7 @@
             [class.active]="selectedCategory() === cat.id"
             (click)="selectCategory(cat.id)"
           >
-            <span>{{ cat.icon }}</span>
+            <span class="material-symbols-rounded sm">{{ cat.icon }}</span>
             {{ cat.label }}
           </button>
         }
@@ -74,13 +77,19 @@
         @for (entry of filteredEntries(); track entry.id) {
           <article class="entry-card" [class.expanded]="expandedId() === entry.id">
             <button type="button" class="entry-trigger" (click)="toggleTerm(entry.id)">
-              <span class="entry-icon">{{ entry.icon }}</span>
+              <span class="entry-icon">
+                <span class="material-symbols-rounded md">{{ entry.icon }}</span>
+              </span>
               <div class="entry-summary">
                 <span class="entry-cat">{{ entry.categoryLabel }}</span>
                 <h3>{{ entry.term }}</h3>
                 <p>{{ entry.tagline }}</p>
               </div>
-              <span class="chevron">{{ expandedId() === entry.id ? '▲' : '▼' }}</span>
+              <span class="chevron">
+                <span class="material-symbols-rounded sm">
+                  {{ expandedId() === entry.id ? 'expand_less' : 'expand_more' }}
+                </span>
+              </span>
             </button>
 
             @if (expandedId() === entry.id) {
@@ -91,23 +100,35 @@
                 </div>
 
                 <div class="detail-block danger-note">
-                  <h4>⚠️ ¿Por qué es peligroso?</h4>
+                  <h4>
+                    <span class="material-symbols-rounded sm">warning</span>
+                    ¿Por qué es peligroso?
+                  </h4>
                   <p>{{ entry.whyDangerous }}</p>
                 </div>
 
                 <div class="examples-compare">
                   <div class="example-box bad">
-                    <strong>❌ Señal de estafa / riesgo</strong>
+                    <strong>
+                      <span class="material-symbols-rounded sm">cancel</span>
+                      Señal de estafa / riesgo
+                    </strong>
                     <span>{{ entry.badExample }}</span>
                   </div>
                   <div class="example-box good">
-                    <strong>✅ Comportamiento seguro</strong>
+                    <strong>
+                      <span class="material-symbols-rounded sm">check_circle</span>
+                      Comportamiento seguro
+                    </strong>
                     <span>{{ entry.goodExample }}</span>
                   </div>
                 </div>
 
                 <div class="tips-block">
-                  <h4>🛡️ Cómo protegerte</h4>
+                  <h4>
+                    <span class="material-symbols-rounded sm">shield</span>
+                    Cómo protegerte
+                  </h4>
                   <ul>
                     @for (t of entry.tips; track t) {
                       <li>{{ t }}</li>
@@ -119,7 +140,7 @@
           </article>
         } @empty {
           <div class="empty-results">
-            <span>🔎</span>
+            <span class="material-symbols-rounded lg">search_off</span>
             <p>No encontramos conceptos para "{{ searchQuery() }}".</p>
             <button type="button" (click)="searchQuery.set(''); selectCategory('all')">
               Ver todos los conceptos
@@ -130,7 +151,8 @@
     </div>
 
     <footer class="drawer-footer">
-      <span>🛡️ Regla de oro: Un segundo de duda puede proteger tus datos.</span>
+      <span class="material-symbols-rounded sm">verified_user</span>
+      <span>Regla de oro: Un segundo de duda puede proteger tus datos.</span>
     </footer>
   </aside>
 }
