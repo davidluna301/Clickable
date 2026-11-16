@@ -157,12 +157,34 @@ export class AuthService {
         const mapped = this.mapFirebaseUser(cred.user);
         this.currentUser.set(mapped);
         return mapped;
-      } catch (error) {
+      } catch (error: any) {
+        if (error?.code === 'auth/unauthorized-domain') {
+          const users = this.readLocalUsers();
+          const found = users.find((u) => u.email.toLowerCase() === cleanEmail);
+          if (found && found.password === password) {
+            const user: AuthUser = {
+              uid: found.uid,
+              email: found.email,
+              firstName: found.firstName,
+              lastName: found.lastName,
+              displayName: found.displayName,
+              provider: 'local',
+              emailVerified: true,
+            };
+            this.saveLocalSession(user, remember);
+            this.currentUser.set(user);
+            return user;
+          }
+        }
         throw new Error(this.translateFirebaseError(error));
       }
     }
 
     // Respaldo local
+    return this.loginLocally(cleanEmail, password, remember);
+  }
+
+  private loginLocally(cleanEmail: string, password: string, remember: boolean): AuthUser {
     const users = this.readLocalUsers();
     const found = users.find((u) => u.email.toLowerCase() === cleanEmail);
     if (!found || found.password !== password) {
@@ -211,12 +233,25 @@ export class AuthService {
         };
         this.currentUser.set(mapped);
         return mapped;
-      } catch (error) {
+      } catch (error: any) {
+        if (error?.code === 'auth/unauthorized-domain') {
+          return this.registerLocally(payload, cleanEmail, fullName, firstName, lastName);
+        }
         throw new Error(this.translateFirebaseError(error));
       }
     }
 
     // Respaldo local
+    return this.registerLocally(payload, cleanEmail, fullName, firstName, lastName);
+  }
+
+  private registerLocally(
+    payload: RegisterPayload,
+    cleanEmail: string,
+    fullName: string,
+    firstName: string,
+    lastName: string
+  ): AuthUser {
     const users = this.readLocalUsers();
     if (users.some((u) => u.email.toLowerCase() === cleanEmail)) {
       throw new Error('Ya existe una cuenta registrada con este correo electrónico.');
