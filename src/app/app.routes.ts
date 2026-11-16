@@ -16,6 +16,7 @@ export const routes: Routes = [
   { path: 'profile', component: Profile, canActivate: [authGuard] },
   {
     path: 'classroom',
+    canActivate: [authGuard],
     loadComponent: () =>
       import('./classroom/classroom').then((m) => m.ClassroomComponent),
   },

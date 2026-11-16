@@ -26,7 +26,7 @@ describe('Unified PublicNav & Public Home privacy/deduplication', () => {
     const homeNavLinks = Array.from(homeEl.querySelectorAll('app-public-nav .pub-link-btn')).map(
       (el) => el.textContent?.trim()
     );
-    expect(homeNavLinks).toEqual(['Inicio', 'Amenazas', 'Aprende', 'Modo Aula']);
+    expect(homeNavLinks).toEqual(['Inicio', 'Amenazas', 'Aprende']);
     expect(homeEl.querySelector('app-help-glossary')).toBeNull();
     expect(homeEl.textContent?.toLowerCase()).not.toContain('glosario');
 
