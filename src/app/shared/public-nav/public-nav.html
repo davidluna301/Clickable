@@ -1,0 +1,46 @@
+<header class="pub-nav-wrap" [class.scrolled]="scrolled()">
+  <div class="pub-nav-inner">
+    <button type="button" class="brand" (click)="goToSection('inicio')" aria-label="Ir al inicio de Clickable">
+      <span class="brand-mark">C</span>
+      <span>Clickable<span class="dot">.</span></span>
+    </button>
+
+    <nav class="pub-links" aria-label="Navegación principal">
+      <button
+        type="button"
+        class="pub-link-btn"
+        [class.active]="activePage() === 'home'"
+        (click)="goToSection('inicio')"
+      >
+        Inicio
+      </button>
+
+      <button type="button" class="pub-link-btn" (click)="goToSection('amenazas')">
+        Amenazas
+      </button>
+
+      <button type="button" class="pub-link-btn" (click)="goToSection('aprende')">
+        Aprende
+      </button>
+    </nav>
+
+    <div class="pub-actions">
+      @if (auth.isAuthenticated()) {
+        <a routerLink="/profile" class="pub-cta-btn">
+          <span>Mi perfil</span>
+          <span class="material-symbols-rounded sm">arrow_forward</span>
+        </a>
+      } @else if (activePage() === 'login') {
+        <button type="button" class="pub-cta-btn" (click)="handleAuthNav('register')">
+          <span>Crear cuenta</span>
+          <span class="material-symbols-rounded sm">arrow_forward</span>
+        </button>
+      } @else {
+        <button type="button" class="pub-cta-btn" (click)="handleAuthNav('login')">
+          <span>Iniciar sesión</span>
+          <span class="material-symbols-rounded sm">arrow_forward</span>
+        </button>
+      }
+    </div>
+  </div>
+</header>

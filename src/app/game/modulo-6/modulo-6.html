@@ -1,0 +1,31 @@
+@if (!started()) {
+  <app-module-intro
+    [module]="data"
+    orderLabel="MÓDULO 06 DE 08"
+    categoryLabel="WI-FI Y REDES"
+    glossaryLabel="¿Qué es un Evil Twin?"
+    [checkpoint]="activeCheckpoint()"
+    (start)="resumeOrStart()"
+    (startFresh)="startFresh()"
+    (openGlossary)="glossaryOpen.set(true)"
+  />
+
+  <app-help-glossary
+    [open]="glossaryOpen()"
+    [moduleTitle]="data.title"
+    [moduleTips]="data.tips"
+    [initialCategory]="data.glossaryCategory || 'network'"
+    (closed)="glossaryOpen.set(false)"
+  />
+} @else {
+  <div class="game-shell">
+    <app-game-board
+      [module]="data"
+      [initialCheckpoint]="activeCheckpoint()"
+      (checkpointSaved)="onCheckpoint($event)"
+      (restarted)="onRestart()"
+      (finished)="onFinished($event)"
+      (attempted)="onAttempted($event)"
+    />
+  </div>
+}

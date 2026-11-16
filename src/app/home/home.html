@@ -1,0 +1,489 @@
+<!-- =========================
+     SHARED PUBLIC NAVBAR
+<app-public-nav activePage="home" [scrolled]="scrolled()" />
+
+<main>
+  <!-- =========================
+       HERO
+  ========================== -->
+  <section class="hero" id="inicio">
+    <div class="hero-grid">
+      <!-- LEFT -->
+      <div class="hero-content">
+        <div class="badge">
+          <span class="status"></span>
+          EDUCACIÓN DIGITAL · SEGURIDAD
+        </div>
+
+        <h1>
+          No debes darle
+          <span>click</span>
+          a todo.
+        </h1>
+
+        <p class="hero-description">
+          Aprende a reconocer phishing, malware, anuncios engañosos y enlaces sospechosos antes de que un simple clic se convierta en un problema.
+        </p>
+
+        <div class="hero-buttons">
+          @if (auth.isAuthenticated()) {
+            <a routerLink="/profile" class="btn primary">
+              Ir a mi perfil
+              <span class="material-symbols-rounded sm">arrow_forward</span>
+            </a>
+          } @else {
+            <button type="button" class="btn primary" (click)="scrollTo('juego')">
+              Probar simulador
+              <span class="material-symbols-rounded sm">arrow_forward</span>
+            </button>
+          }
+
+          <button type="button" class="btn secondary" (click)="scrollTo('amenazas')">
+            Conocer amenazas
+          </button>
+        </div>
+
+        <div class="steps">
+          <div class="step">
+            <strong>01</strong>
+            <span>Observa</span>
+          </div>
+          <div class="step-line"></div>
+          <div class="step">
+            <strong>02</strong>
+            <span>Piensa</span>
+          </div>
+          <div class="step-line"></div>
+          <div class="step">
+            <strong>03</strong>
+            <span>Decide</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT -->
+      <div class="hero-visual">
+        <div class="circle circle-1"></div>
+        <div class="circle circle-2"></div>
+
+        <!-- BROWSER PREVIEW -->
+        <div class="browser">
+          <div class="browser-header">
+            <div class="browser-dots">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+
+            <div class="url">
+              <span class="material-symbols-rounded sm">lock</span>
+              secure-account-check<span class="url-danger">.com</span>
+            </div>
+
+            <div class="menu">•••</div>
+          </div>
+
+          <div class="browser-body">
+            <div class="warning">
+              <span>!</span>
+              MENSAJE SOSPECHOSO
+            </div>
+
+            <div class="email-card">
+              <div class="email-header">
+                <div class="avatar">B</div>
+                <div>
+                  <strong>Banco Seguridad</strong>
+                  <small>security&#64;bank-alerts.co</small>
+                </div>
+                <small class="time">Ahora</small>
+              </div>
+
+              <h3 class="hero-alert-title">
+                <span class="material-symbols-rounded sm hero-warn-icon">warning</span>
+                Tu cuenta será suspendida
+              </h3>
+              <p>
+                Detectamos una actividad inusual. Verifica tus datos inmediatamente para evitar el bloqueo de tu cuenta.
+              </p>
+
+              <button type="button" class="fake-link" (click)="scrollTo('juego')">
+                Verificar mi cuenta
+                <span class="material-symbols-rounded sm">north_east</span>
+              </button>
+            </div>
+
+            <div class="analysis">
+              <div class="analysis-icon">
+                <span class="material-symbols-rounded sm">check</span>
+              </div>
+              <div>
+                <strong>¿Lo detectaste?</strong>
+                <small>Urgencia + dominio extraño + solicitud de datos</small>
+              </div>
+              <span class="danger-text">RIESGO</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="floating-card risk-card">
+          <div class="floating-icon red">
+            <span class="material-symbols-rounded sm">priority_high</span>
+          </div>
+          <div>
+            <strong>Phishing</strong>
+            <small>Alta probabilidad</small>
+          </div>
+        </div>
+
+        <div class="floating-card safe-card">
+          <div class="floating-icon green-icon">
+            <span class="material-symbols-rounded sm">verified_user</span>
+          </div>
+          <div>
+            <strong>Piensa antes</strong>
+            <small>Tu mejor defensa</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================
+       STATS
+  ========================== -->
+  <section class="stats">
+    <div class="container stats-grid">
+      <div>
+        <strong>01</strong>
+        <h3>Reconoce</h3>
+        <p>Señales de peligro</p>
+      </div>
+      <div>
+        <strong>02</strong>
+        <h3>Comprueba</h3>
+        <p>Antes de interactuar</p>
+      </div>
+      <div>
+        <strong>03</strong>
+        <h3>Aprende</h3>
+        <p>Jugando y practicando</p>
+      </div>
+      <div>
+        <strong>04</strong>
+        <h3>Protege</h3>
+        <p>Tus datos y cuentas</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================
+       AMENAZAS
+  ========================== -->
+  <section class="section threats" id="amenazas">
+    <div class="container">
+      <div class="section-heading">
+        <div>
+          <span class="section-label">01 · CONOCE EL RIESGO</span>
+          <h2>
+            El peligro puede
+            <span>parecer inofensivo.</span>
+          </h2>
+        </div>
+
+        <p>
+          No necesitas ser experto en ciberseguridad. Aprende a reconocer las señales que aparecen antes de un clic peligroso.
+        </p>
+      </div>
+
+      <div class="threat-grid">
+        <article class="threat-card red-card">
+          <div class="threat-icon">
+            <span class="material-symbols-rounded md">phishing</span>
+          </div>
+          <span class="number">01</span>
+          <h3>Phishing</h3>
+          <p>
+            Mensajes que imitan a personas o empresas para robar tus credenciales o información.
+          </p>
+          <span class="card-clue">
+            <span class="material-symbols-rounded xs">alternate_email</span>
+            Revisa el dominio tras el &#64;
+          </span>
+        </article>
+
+        <article class="threat-card orange-card">
+          <div class="threat-icon">
+            <span class="material-symbols-rounded md">bug_report</span>
+          </div>
+          <span class="number">02</span>
+          <h3>Malware</h3>
+          <p>
+            Archivos, enlaces o programas que pueden introducir software dañino en tu dispositivo.
+          </p>
+          <span class="card-clue">
+            <span class="material-symbols-rounded xs">description</span>
+            Cuidado con archivos .pdf.exe
+          </span>
+        </article>
+
+        <article class="threat-card yellow-card">
+          <div class="threat-icon">
+            <span class="material-symbols-rounded md">psychology</span>
+          </div>
+          <span class="number">03</span>
+          <h3>Ingeniería Social</h3>
+          <p>
+            Contenido exagerado o premios urgentes diseñados para conseguir que hagas clic sin pensar.
+          </p>
+          <span class="card-clue">
+            <span class="material-symbols-rounded xs">schedule</span>
+            Desconfía de la falsa urgencia
+          </span>
+        </article>
+
+        <article class="threat-card purple-card">
+          <div class="threat-icon">
+            <span class="material-symbols-rounded md">qr_code_2</span>
+          </div>
+          <span class="number">04</span>
+          <h3>QR malicioso</h3>
+          <p>
+            Un código QR alterado puede llevarte a una página falsa o desviar pagos aunque parezca legítimo.
+          </p>
+          <span class="card-clue">
+            <span class="material-symbols-rounded xs">storefront</span>
+            Verifica el receptor del pago
+          </span>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================
+       APRENDER
+  ========================== -->
+  <section class="section learn" id="aprende">
+    <div class="container learn-grid">
+      <div class="analyzer">
+        <div class="terminal-header">
+          <span>ANALIZADOR DE CLIC</span>
+          <span class="live">● LIVE</span>
+        </div>
+
+        <div class="terminal-content">
+          <div class="terminal-line">
+            <span>$</span> analizar mensaje...
+          </div>
+          <div class="terminal-muted">buscando señales de riesgo...</div>
+
+          <div class="signal">
+            <span class="signal-symbol red">!</span>
+            <div>
+              <strong>Urgencia artificial</strong>
+              <small>"Actúa inmediatamente"</small>
+            </div>
+            <b>ALERTA</b>
+          </div>
+
+          <div class="signal">
+            <span class="signal-symbol red">!</span>
+            <div>
+              <strong>Dominio sospechoso</strong>
+              <small>bank-alerts.co</small>
+            </div>
+            <b>ALERTA</b>
+          </div>
+
+          <div class="signal">
+            <span class="signal-symbol safe">
+              <span class="material-symbols-rounded sm">check</span>
+            </span>
+            <div>
+              <strong>Enlace no verificado</strong>
+              <small>No hagas clic todavía</small>
+            </div>
+            <b class="review">REVISAR</b>
+          </div>
+
+          <div class="risk-result">
+            <span>Riesgo detectado</span>
+            <strong>87%</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="learn-content">
+        <span class="section-label">02 · APRENDE A VERLO</span>
+        <h2>
+          Antes de hacer clic,
+          <span>hazte tres preguntas.</span>
+        </h2>
+
+        <div class="questions">
+          <div class="question">
+            <span>01</span>
+            <div>
+              <strong>¿Conozco al remitente?</strong>
+              <p>Si no esperabas el mensaje, desconfía y verifica por un canal oficial.</p>
+            </div>
+          </div>
+
+          <div class="question">
+            <span>02</span>
+            <div>
+              <strong>¿El enlace es realmente quien dice ser?</strong>
+              <p>Revisa el dominio letra por letra y evita entrar desde enlaces inesperados.</p>
+            </div>
+          </div>
+
+          <div class="question">
+            <span>03</span>
+            <div>
+              <strong>¿Me están presionando?</strong>
+              <p>La urgencia, amenazas o premios inesperados son señales de alerta.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================
+       JUEGO INTERACTIVO EN VIVO
+  ========================== -->
+  <section class="game-section" id="juego">
+    <div class="container">
+      <div class="game">
+        <div class="game-content">
+          <span class="section-label">03 · PONLO A PRUEBA</span>
+          <h2>¿Harías clic?</h2>
+
+          <p>
+            Entrena tu criterio con situaciones que parecen reales. La idea no es memorizar: es aprender a detenerte, analizar y entender por qué algo es seguro o peligroso.
+          </p>
+
+          <div class="game-info">
+            <span><span class="material-symbols-rounded sm">shield</span> 8 módulos progresivos</span>
+            <span><span class="material-symbols-rounded sm">sports_esports</span> Simulador interactivo paso a paso</span>
+          </div>
+
+          @if (auth.isAuthenticated()) {
+            <div class="hero-buttons">
+              <a class="btn primary" routerLink="/profile">
+                Ir a mis módulos
+                <span class="material-symbols-rounded sm">arrow_forward</span>
+              </a>
+            </div>
+          }
+        </div>
+
+        <!-- SIMULACIÓN INTERACTIVA -->
+        <div class="simulation">
+          <div class="notification">
+            <div class="notification-icon">
+              <span class="material-symbols-rounded sm">priority_high</span>
+            </div>
+            <div>
+              <strong>Prueba interactiva rápida</strong>
+              <small>Toca cualquier parte sospechosa del correo ({{ inspectedSignals().length }}/3 detectadas)</small>
+            </div>
+            <span class="demo-badge">DEMO</span>
+          </div>
+
+          <div class="fake-email">
+            <button
+              type="button"
+              class="sender demo-clickable"
+              [class.inspected]="inspectedSignals().includes('sender')"
+              (click)="inspectDemo('sender')"
+            >
+              <div class="sender-avatar">B</div>
+              <div>
+                <strong>Banco Nacional</strong>
+                <small>soporte&#64;banco-seguro.co</small>
+              </div>
+              <span class="tap-pill">{{ inspectedSignals().includes('sender') ? 'Detectado' : 'Analizar' }}</span>
+            </button>
+
+            <button
+              type="button"
+              class="demo-body-btn demo-clickable"
+              [class.inspected]="inspectedSignals().includes('urgency')"
+              (click)="inspectDemo('urgency')"
+            >
+              <h3>Detectamos un inicio de sesión inusual.</h3>
+              <p>Confirma tu identidad ahora para evitar que tu cuenta sea bloqueada.</p>
+              <span class="tap-pill">{{ inspectedSignals().includes('urgency') ? 'Detectado' : 'Analizar texto' }}</span>
+            </button>
+
+            <button
+              type="button"
+              class="fake-button"
+              [class.inspected]="inspectedSignals().includes('button')"
+              (click)="inspectDemo('button')"
+            >
+              Confirmar identidad
+              <span class="material-symbols-rounded sm">arrow_forward</span>
+            </button>
+          </div>
+
+          @if (activeDemoSignal(); as sig) {
+            <div class="demo-feedback">
+              <strong>
+                <span class="material-symbols-rounded sm">gpp_maybe</span>
+                ¡Bien visto! Analizaste: "{{ sig.label }}"
+              </strong>
+              <p>{{ sig.reason }}</p>
+            </div>
+          } @else {
+            <div class="hint">
+              <span class="material-symbols-rounded sm hint-svg">lightbulb</span>
+              <span>
+                <strong>Pista:</strong>
+                Haz clic en el remitente, el texto o el botón rojo para ver por qué es un ataque de phishing.
+              </span>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================
+       FINAL CTA
+  ========================== -->
+  <section class="final">
+    <div class="final-content">
+      <div class="final-logo">C</div>
+      <span class="section-label">CLICKABLE</span>
+      <h2>
+        Un segundo de duda
+        <span>puede proteger tus datos.</span>
+      </h2>
+      <p>Observa. Piensa. Comprueba. Después, decide.</p>
+
+      <div class="final-actions">
+        <a [routerLink]="auth.isAuthenticated() ? '/profile' : '/register'" class="btn dark">
+          {{ auth.isAuthenticated() ? 'Ir a mi perfil' : 'Crear cuenta gratis' }}
+          <span class="material-symbols-rounded sm">arrow_forward</span>
+        </a>
+        <button type="button" class="btn outline-light" (click)="scrollTo('inicio')">
+          Volver al inicio
+          <span class="material-symbols-rounded sm">arrow_upward</span>
+        </button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="container footer-content">
+    <button type="button" class="logo logo-btn footer-logo" (click)="scrollTo('inicio')">
+      <span class="logo-icon">C</span>
+      <span>Clickable<span class="green">.</span></span>
+    </button>
+    <span>Educación digital para navegar con más criterio.</span>
+    <span>© 2026 Clickable</span>
+  </div>
+</footer>

@@ -1,0 +1,15 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  background:
+    radial-gradient(ellipse at 90% 5%, rgba(5, 244, 179, 0.1), transparent 30rem),
+    #f3f7f4;
+  color: #17211f;
+  font-family: "Inter", sans-serif;
+}
+
+.game-shell {
+  width: min(1140px, calc(100% - 28px));
+  margin: 0 auto;
+  padding: 24px 0 56px;
+}

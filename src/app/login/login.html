@@ -1,0 +1,482 @@
+<div class="auth-page">
+  <app-public-nav
+    [activePage]="mode() === 'register' ? 'register' : 'login'"
+    (authSwitch)="switchMode($event)"
+  />
+
+  <!-- ==================================================
+       LOGIN & FORGOT PASSWORD
+  ================================================== -->
+  @if (mode() === 'login' || mode() === 'forgot') {
+    <section class="auth-screen" id="login">
+      <div class="auth-layout">
+        <!-- LEFT BRAND -->
+        <div class="auth-brand">
+          <div class="brand-container">
+            <a routerLink="/home" class="logo">
+              <span class="logo-icon">C</span>
+              <span>Clickable<span class="green">.</span></span>
+            </a>
+
+            <div class="brand-message">
+              <span class="mini-label">SEGURIDAD DIGITAL</span>
+              <h1>
+                No debes darle
+                <span>click</span>
+                a todo.
+              </h1>
+              <p>
+                Aprende a identificar amenazas digitales, mejora tus habilidades y conviértete en alguien más difícil de engañar.
+              </p>
+
+              <div class="security-points">
+                <div>
+                  <span class="point-icon">
+                    <span class="material-symbols-rounded sm">check</span>
+                  </span>
+                  Aprende jugando en simuladores reales
+                </div>
+                <div>
+                  <span class="point-icon">
+                    <span class="material-symbols-rounded sm">check</span>
+                  </span>
+                  Descubre por qué cada señal es phishing o segura
+                </div>
+                <div>
+                  <span class="point-icon">
+                    <span class="material-symbols-rounded sm">check</span>
+                  </span>
+                  Guarda tu avance y desbloquea módulos
+                </div>
+              </div>
+            </div>
+
+            <div class="brand-footer">
+              <span>Clickable · Educación digital</span>
+              <span>{{ isFirebaseMode() ? 'Firebase Auth activo' : 'Modo local temporal' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT PANEL -->
+        <div class="auth-panel">
+          <div class="auth-card">
+            <div class="mobile-logo">
+              <span class="logo-icon">C</span>
+              Clickable<span class="green">.</span>
+            </div>
+
+            @if (returnUrl()) {
+              <div class="info-banner">
+                <span class="material-symbols-rounded sm">lock</span>
+                <span>Inicia sesión o crea tu cuenta para entrar a tu perfil y acceder a los módulos.</span>
+              </div>
+            }
+
+            @if (!isFirebaseMode()) {
+              <div class="firebase-hint">
+                <span class="material-symbols-rounded sm">bolt</span>
+                <small>
+                  <strong>Firebase listo para conectar:</strong> agrega tus credenciales en
+                  <code>src/environments/environment.ts</code>. Mientras tanto, puedes usar registro y login local sin restricciones.
+                </small>
+              </div>
+            }
+
+            @if (mode() === 'login') {
+              <div class="auth-heading">
+                <span class="mini-label">BIENVENIDO DE NUEVO</span>
+                <h2>Inicia sesión</h2>
+                <p>Entra directo a tu perfil y continúa desbloqueando módulos.</p>
+              </div>
+
+              @if (errorMsg()) {
+                <div class="alert error" role="alert">
+                  <span class="material-symbols-rounded sm">warning</span>
+                  <span>{{ errorMsg() }}</span>
+                </div>
+              }
+              @if (successMsg()) {
+                <div class="alert success" role="status">
+                  <span class="material-symbols-rounded sm">check_circle</span>
+                  <span>{{ successMsg() }}</span>
+                </div>
+              }
+
+              <form (ngSubmit)="submitLogin()" novalidate>
+                <div class="input-group">
+                  <label for="login-email">Correo electrónico</label>
+                  <div class="input-wrapper">
+                    <span class="input-prefix">
+                      <span class="material-symbols-rounded sm outline">alternate_email</span>
+                    </span>
+                    <input
+                      id="login-email"
+                      name="loginEmail"
+                      type="email"
+                      autocomplete="email"
+                      [ngModel]="loginEmail()"
+                      (ngModelChange)="loginEmail.set($event)"
+                      placeholder="tu@email.com"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div class="input-group">
+                  <div class="label-row">
+                    <label for="login-password">Contraseña</label>
+                    <button type="button" class="inline-link" (click)="switchMode('forgot')">
+                      ¿Olvidaste tu contraseña?
+                    </button>
+                  </div>
+
+                  <div class="input-wrapper">
+                    <span class="input-prefix">
+                      <span class="material-symbols-rounded sm outline">lock</span>
+                    </span>
+                    <input
+                      id="login-password"
+                      name="loginPassword"
+                      [type]="showLoginPass() ? 'text' : 'password'"
+                      autocomplete="current-password"
+                      [ngModel]="loginPassword()"
+                      (ngModelChange)="loginPassword.set($event)"
+                      placeholder="Tu contraseña"
+                      required
+                    />
+                    <button
+                      type="button"
+                      class="toggle-pass"
+                      (click)="showLoginPass.set(!showLoginPass())"
+                      [attr.aria-label]="showLoginPass() ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+                    >
+                      <span class="material-symbols-rounded sm outline">
+                        {{ showLoginPass() ? 'visibility_off' : 'visibility' }}
+                      </span>
+                    </button>
+                  </div>
+                </div>
+
+                <label class="remember">
+                  <input
+                    type="checkbox"
+                    name="rememberMe"
+                    [ngModel]="rememberMe()"
+                    (ngModelChange)="rememberMe.set($event)"
+                  />
+                  <span>Mantener sesión iniciada</span>
+                </label>
+
+                <button type="submit" class="main-button" [disabled]="loading()">
+                  {{ loading() ? 'Ingresando...' : 'Iniciar sesión' }}
+                  <span class="material-symbols-rounded sm">arrow_forward</span>
+                </button>
+              </form>
+
+              <div class="divider">
+                <span></span>
+                <small>O continúa con</small>
+                <span></span>
+              </div>
+
+              <button class="social-button" type="button" (click)="continueWithGoogle()" [disabled]="loading()">
+                <strong>G</strong>
+                Continuar con Google
+              </button>
+
+              <p class="auth-switch">
+                ¿No tienes una cuenta?
+                <button type="button" class="switch-btn" (click)="switchMode('register')">
+                  Crear cuenta
+                </button>
+              </p>
+            } @else {
+              <!-- FORGOT PASSWORD -->
+              <div class="auth-heading">
+                <span class="mini-label">RECUPERACIÓN</span>
+                <h2>Recuperar clave</h2>
+                <p>Ingresa tu correo y te enviaremos instrucciones para restablecer tu contraseña.</p>
+              </div>
+
+              @if (errorMsg()) {
+                <div class="alert error" role="alert">
+                  <span class="material-symbols-rounded sm">warning</span>
+                  <span>{{ errorMsg() }}</span>
+                </div>
+              }
+              @if (successMsg()) {
+                <div class="alert success" role="status">
+                  <span class="material-symbols-rounded sm">check_circle</span>
+                  <span>{{ successMsg() }}</span>
+                </div>
+              }
+
+              <form (ngSubmit)="submitForgot()" novalidate>
+                <div class="input-group">
+                  <label for="forgot-email">Correo registrado</label>
+                  <div class="input-wrapper">
+                    <span class="input-prefix">
+                      <span class="material-symbols-rounded sm outline">alternate_email</span>
+                    </span>
+                    <input
+                      id="forgot-email"
+                      name="forgotEmail"
+                      type="email"
+                      [ngModel]="forgotEmail()"
+                      (ngModelChange)="forgotEmail.set($event)"
+                      placeholder="tu@email.com"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <button type="submit" class="main-button" [disabled]="loading()">
+                  {{ loading() ? 'Enviando...' : 'Enviar enlace de recuperación' }}
+                  <span class="material-symbols-rounded sm">arrow_forward</span>
+                </button>
+              </form>
+
+              <p class="auth-switch">
+                <button type="button" class="switch-btn" (click)="switchMode('login')">
+                  <span class="material-symbols-rounded sm">arrow_back</span>
+                  Volver a Iniciar sesión
+                </button>
+              </p>
+            }
+          </div>
+        </div>
+      </div>
+    </section>
+  }
+
+  <!-- ==================================================
+       REGISTER
+  ================================================== -->
+  @if (mode() === 'register') {
+    <section class="auth-screen register-screen" id="register">
+      <div class="auth-layout">
+        <!-- BRAND PANEL -->
+        <div class="auth-brand register-brand">
+          <div class="brand-container">
+            <a routerLink="/home" class="logo">
+              <span class="logo-icon">C</span>
+              <span>Clickable<span class="green">.</span></span>
+            </a>
+
+            <div class="brand-message">
+              <span class="mini-label">CREA TU PERFIL</span>
+              <h1>
+                Aprende a
+                <span>detectar</span>
+                antes de hacer clic.
+              </h1>
+              <p>
+                Tu progreso, desafíos completados, insignias y conocimientos estarán guardados en tu perfil personal.
+              </p>
+
+              <div class="level-preview">
+                <div class="level-header">
+                  <span>TU RUTA EN CLICKABLE</span>
+                  <strong>Nivel 01</strong>
+                </div>
+                <div class="progress-bar">
+                  <span [style.width.%]="passwordStrength().score * 25"></span>
+                </div>
+                <div class="level-footer">
+                  <span>4 simuladores progresivos</span>
+                  <span>Progreso guardado por cuenta</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="brand-footer">
+              <span>Clickable</span>
+              <span>Aprende · Practica · Protege</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- REGISTER FORM -->
+        <div class="auth-panel">
+          <div class="auth-card register-card">
+            <div class="mobile-logo">
+              <span class="logo-icon">C</span>
+              Clickable<span class="green">.</span>
+            </div>
+
+            <div class="auth-heading">
+              <span class="mini-label">EMPIEZA AHORA</span>
+              <h2>Crea tu cuenta</h2>
+              <p>Regístrate para entrar de inmediato a tu perfil y comenzar el entrenamiento.</p>
+            </div>
+
+            @if (errorMsg()) {
+              <div class="alert error" role="alert">
+                <span class="material-symbols-rounded sm">warning</span>
+                <span>{{ errorMsg() }}</span>
+              </div>
+            }
+
+            <form (ngSubmit)="submitRegister()" novalidate>
+              <div class="two-inputs">
+                <div class="input-group">
+                  <label for="reg-firstname">Nombre</label>
+                  <div class="input-wrapper">
+                    <input
+                      id="reg-firstname"
+                      name="firstName"
+                      type="text"
+                      autocomplete="given-name"
+                      [ngModel]="regFirstName()"
+                      (ngModelChange)="regFirstName.set($event)"
+                      placeholder="Tu nombre"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div class="input-group">
+                  <label for="reg-lastname">Apellido</label>
+                  <div class="input-wrapper">
+                    <input
+                      id="reg-lastname"
+                      name="lastName"
+                      type="text"
+                      autocomplete="family-name"
+                      [ngModel]="regLastName()"
+                      (ngModelChange)="regLastName.set($event)"
+                      placeholder="Tu apellido"
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div class="input-group">
+                <label for="reg-email">Correo electrónico</label>
+                <div class="input-wrapper">
+                  <span class="input-prefix">
+                    <span class="material-symbols-rounded sm outline">alternate_email</span>
+                  </span>
+                  <input
+                    id="reg-email"
+                    name="regEmail"
+                    type="email"
+                    autocomplete="email"
+                    [ngModel]="regEmail()"
+                    (ngModelChange)="regEmail.set($event)"
+                    placeholder="tu@email.com"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div class="input-group">
+                <label for="reg-password">Contraseña</label>
+                <div class="input-wrapper">
+                  <span class="input-prefix">
+                    <span class="material-symbols-rounded sm outline">lock</span>
+                  </span>
+                  <input
+                    id="reg-password"
+                    name="regPassword"
+                    [type]="showRegPass() ? 'text' : 'password'"
+                    autocomplete="new-password"
+                    [ngModel]="regPassword()"
+                    (ngModelChange)="regPassword.set($event)"
+                    placeholder="Mínimo 8 caracteres"
+                    required
+                  />
+                  <button
+                    type="button"
+                    class="toggle-pass"
+                    (click)="showRegPass.set(!showRegPass())"
+                    [attr.aria-label]="showRegPass() ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+                  >
+                    <span class="material-symbols-rounded sm outline">
+                      {{ showRegPass() ? 'visibility_off' : 'visibility' }}
+                    </span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="password-strength">
+                <div class="strength-bars" [attr.data-level]="passwordStrength().level">
+                  <span [class.active]="passwordStrength().score >= 1"></span>
+                  <span [class.active]="passwordStrength().score >= 2"></span>
+                  <span [class.active]="passwordStrength().score >= 3"></span>
+                  <span [class.active]="passwordStrength().score >= 4"></span>
+                </div>
+                <small>Seguridad de la contraseña: <strong>{{ passwordStrength().label }}</strong></small>
+              </div>
+
+              <label class="terms">
+                <input
+                  type="checkbox"
+                  name="acceptTerms"
+                  [ngModel]="acceptTerms()"
+                  (ngModelChange)="acceptTerms.set($event)"
+                />
+                <span>
+                  Acepto los
+                  <button type="button" class="inline-link" (click)="showTermsModal.set(true)">
+                    términos y condiciones
+                  </button>
+                  y la política de privacidad educativa de Clickable.
+                </span>
+              </label>
+
+              <button type="submit" class="main-button" [disabled]="loading()">
+                {{ loading() ? 'Creando cuenta...' : 'Crear mi cuenta' }}
+                <span class="material-symbols-rounded sm">arrow_forward</span>
+              </button>
+            </form>
+
+            <div class="divider">
+              <span></span>
+              <small>O regístrate rápido con</small>
+              <span></span>
+            </div>
+
+            <button class="social-button" type="button" (click)="continueWithGoogle()" [disabled]="loading()">
+              <strong>G</strong>
+              Continuar con Google
+            </button>
+
+            <p class="auth-switch">
+              ¿Ya tienes una cuenta?
+              <button type="button" class="switch-btn" (click)="switchMode('login')">
+                Iniciar sesión
+              </button>
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  }
+
+  @if (showTermsModal()) {
+    <div class="modal-backdrop" (click)="showTermsModal.set(false)">
+      <div class="terms-modal" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+        <header>
+          <h3>Términos y Privacidad · Clickable</h3>
+          <button type="button" (click)="showTermsModal.set(false)" aria-label="Cerrar">
+            <span class="material-symbols-rounded sm">close</span>
+          </button>
+        </header>
+        <p>
+          Clickable es una plataforma educativa diseñada para entrenar tu criterio frente a amenazas digitales como phishing, malware, smishing y fraudes financieros.
+        </p>
+        <ul>
+          <li>Tu nombre y correo se utilizan únicamente para personalizar tu perfil y guardar tu progreso de aprendizaje.</li>
+          <li>Todas las simulaciones del juego son entornos educativos seguros; nunca solicitamos claves bancarias ni datos financieros reales.</li>
+          <li>Puedes cerrar sesión en cualquier momento desde tu perfil.</li>
+        </ul>
+        <button type="button" class="main-button" (click)="acceptTerms.set(true); showTermsModal.set(false)">
+          Aceptar y continuar
+        </button>
+      </div>
+    </div>
+  }
+</div>

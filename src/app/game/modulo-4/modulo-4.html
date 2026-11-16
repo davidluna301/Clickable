@@ -1,0 +1,31 @@
+@if (!started()) {
+  <app-module-intro
+    [module]="data"
+    orderLabel="MÓDULO 04 DE 04"
+    categoryLabel="FRAUDES FINANCIEROS"
+    glossaryLabel="¿Qué es QRishing?"
+    [checkpoint]="activeCheckpoint()"
+    (start)="resumeOrStart()"
+    (startFresh)="startFresh()"
+    (openGlossary)="glossaryOpen.set(true)"
+  />
+
+  <app-help-glossary
+    [open]="glossaryOpen()"
+    [moduleTitle]="data.title"
+    [moduleTips]="data.tips"
+    [initialCategory]="data.glossaryCategory || 'fraud'"
+    (closed)="glossaryOpen.set(false)"
+  />
+} @else {
+  <div class="game-shell">
+    <app-game-board
+      [module]="data"
+      [initialCheckpoint]="activeCheckpoint()"
+      (checkpointSaved)="onCheckpoint($event)"
+      (restarted)="onRestart()"
+      (finished)="onFinished($event)"
+      (attempted)="onAttempted($event)"
+    />
+  </div>
+}

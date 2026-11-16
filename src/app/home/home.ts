@@ -1,10 +1,67 @@
-import { Component } from '@angular/core';
+import { Component, HostListener, inject, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { AuthService } from '../services/auth.service';
+import { PublicNav } from '../shared/public-nav/public-nav';
+
+interface HomeDemoSignal {
+  id: string;
+  label: string;
+  reason: string;
+}
 
 @Component({
-  imports: [],
+  imports: [RouterLink, PublicNav],
   selector: 'app-home',
   styleUrl: './home.css',
   templateUrl: './home.html',
 })
 export class Home {
+  auth = inject(AuthService);
+
+  scrolled = signal(false);
+
+  // Interactive mini-simulation in #juego
+  activeDemoSignal = signal<HomeDemoSignal | null>(null);
+  inspectedSignals = signal<string[]>([]);
+
+  readonly demoSignals: Record<string, HomeDemoSignal> = {
+    sender: {
+      id: 'sender',
+      label: 'soporte@banco-seguro.co',
+      reason:
+        'Señal 1 · Dominio falso (Phishing): El correo imita el nombre "Banco Nacional", pero usa un dominio genérico inventado (banco-seguro.co). Un banco real siempre escribe desde su dominio oficial.',
+    },
+    urgency: {
+      id: 'urgency',
+      label: 'Confirma tu identidad ahora para evitar bloqueo',
+      reason:
+        'Señal 2 · Urgencia artificial: Los atacantes generan miedo al bloqueo inmediato para que actúes rápido sin verificar en tu app oficial.',
+    },
+    button: {
+      id: 'button',
+      label: 'Botón "Confirmar identidad →"',
+      reason:
+        'Señal 3 · Enlace trampa: Este botón te llevaría a una web clonada diseñada para capturar tu usuario, contraseña y códigos dinámicos.',
+    },
+  };
+
+  @HostListener('window:scroll')
+  onWindowScroll() {
+    this.scrolled.set(window.scrollY > 20);
+  }
+
+  scrollTo(sectionId: string) {
+    const el = document.getElementById(sectionId);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+
+  inspectDemo(key: 'sender' | 'urgency' | 'button') {
+    const sig = this.demoSignals[key];
+    this.activeDemoSignal.set(sig);
+    if (!this.inspectedSignals().includes(key)) {
+      this.inspectedSignals.update((list) => [...list, key]);
+    }
+  }
 }
